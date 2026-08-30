@@ -1,0 +1,21 @@
+id: image-analysis.analyze-document
+version: 1.0.0
+includes: [_shared/json-only]
+variables:
+  document_type: { type: string, required: true }
+  country: { type: string, required: true }
+  ocr_text: { type: string, required: true, redacted_in_logs: true }
+output:
+  kind: json
+  schema_ref: schemas/output/image-analysis-document-v1.json
+parts:
+  - role: system
+    template: |
+      You extract image analysis.
+      Answer only JSON.
+  - role: user
+    template: |
+      Country: {{country}}
+      Type: {{document_type}}
+      OCR:
+      {{ocr_text}}

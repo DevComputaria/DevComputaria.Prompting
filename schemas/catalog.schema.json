@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devcomputaria/schemas/catalog.schema.json",
+  "type": "object",
+  "required": ["package", "schema", "prompts"],
+  "properties": {
+    "package": { "type": "string" },
+    "schema": { "type": "integer", "minimum": 1 },
+    "aliases": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" }
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "versions"],
+        "properties": {
+          "id": { "type": "string" },
+          "versions": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+            "minItems": 1
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

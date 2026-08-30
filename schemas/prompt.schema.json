@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devcomputaria/schemas/prompt.schema.json",
+  "type": "object",
+  "required": ["id", "version", "parts"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "includes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "variables": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "required": { "type": "boolean" },
+          "redacted_in_logs": { "type": "boolean" }
+        },
+        "required": ["type"]
+      }
+    },
+    "parts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "template"],
+        "properties": {
+          "role": { "type": "string", "enum": ["system", "developer", "user"] },
+          "template": { "type": "string" }
+        }
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": true
+}

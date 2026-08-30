@@ -1,0 +1,8 @@
+package: DevComputaria.Prompts
+schema: 1
+aliases:
+  image-analysis.analyze-document: 1.0.0
+prompts:
+  - id: image-analysis.analyze-document
+    versions: [1.0.0]
+    tags: [image-analysis]

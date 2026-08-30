@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devcomputaria/schemas/output/image-analysis-document-v1.json",
+  "type": "object",
+  "required": ["document_type", "country", "confidence"],
+  "properties": {
+    "document_type": { "type": "string" },
+    "country": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "additionalProperties": false
+}

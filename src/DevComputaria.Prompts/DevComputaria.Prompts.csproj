@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\DevComputaria.PromptKit\DevComputaria.PromptKit.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\prompts\**\*.yaml"
+                      LogicalName="prompts.%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\prompts\**\*.md"
+                      LogicalName="prompts.%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\skills\**\*.yaml"
+                      LogicalName="skills.%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\schemas\output\**\*.json"
+                      LogicalName="schemas.output.%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

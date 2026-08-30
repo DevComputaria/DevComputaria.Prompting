@@ -1,0 +1,6 @@
+id: _shared.json-only
+version: 1.0.0
+parts:
+  - role: system
+    template: |
+      Return valid JSON only. No markdown.
