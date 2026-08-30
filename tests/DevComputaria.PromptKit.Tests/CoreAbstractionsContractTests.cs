@@ -1,0 +1,180 @@
+using DevComputaria.PromptKit.Abstractions;
+using Xunit;
+
+namespace DevComputaria.PromptKit.Tests;
+
+public sealed class CoreAbstractionsContractTests
+{
+    [Fact]
+    public void PromptId_ShouldNormalizeAndFormat()
+    {
+        var id = new PromptId(" image-analysis.analyze-document ", " 1.0.0 ");
+
+        Assert.Equal("image-analysis.analyze-document", id.Name);
+        Assert.Equal("1.0.0", id.Version);
+        Assert.Equal("image-analysis.analyze-document@1.0.0", id.ToString());
+    }
+
+    [Fact]
+    public void PromptArgs_ShouldBeImmutableCopy()
+    {
+        var source = new Dictionary<string, object?> { ["country"] = "BR" };
+        var args = new PromptArgs(source);
+
+        source["country"] = "US";
+
+        Assert.True(args.ContainsKey("country"));
+        Assert.Equal("BR", args["country"]);
+    }
+
+    [Fact]
+    public void PromptSpec_ShouldCreateImmutableCollections()
+    {
+        var parts = new List<RenderedMessage>
+        {
+            new("system", "You extract image analysis."),
+            new("user", "Country: {{country}}")
+        };
+
+        var variables = new List<PromptVariableSpec>
+        {
+            new("country", isRequired: true, redactedInLogs: false, type: "string")
+        };
+
+        var includes = new List<string> { "_shared/json-only" };
+
+        var spec = new PromptSpec(
+            new PromptId("image-analysis.analyze-document", "1.0.0"),
+            parts,
+            variables,
+            includes,
+            outputSchemaRef: "schemas/output/image-analysis-document-v1.json");
+
+        parts.Add(new RenderedMessage("assistant", "not allowed"));
+        variables.Add(new PromptVariableSpec("ocr_text", isRequired: true, redactedInLogs: true));
+        includes.Add("_shared/no-invention");
+
+        Assert.Equal(2, spec.Parts.Count);
+        Assert.Single(spec.Variables);
+        Assert.Single(spec.Includes);
+    }
+
+    [Fact]
+    public void RenderedPrompt_ShouldCaptureMetadataAndCopyCollections()
+    {
+        var messages = new List<RenderedMessage>
+        {
+            new("system", "Answer only JSON."),
+            new("user", "OCR: ...")
+        };
+
+        var hints = new Dictionary<string, string?>
+        {
+            ["model"] = "gpt-4o-mini",
+            ["temperature"] = "0"
+        };
+
+        var rendered = new RenderedPrompt(
+            new PromptId("image-analysis.analyze-document", "1.0.0"),
+            "abc123",
+            messages,
+            packageVersion: "1.0.0",
+            hints: hints);
+
+        messages.Clear();
+        hints["temperature"] = "1";
+
+        Assert.Equal("abc123", rendered.ContentSha256);
+        Assert.Equal("1.0.0", rendered.PackageVersion);
+        Assert.Equal(2, rendered.Messages.Count);
+        Assert.Equal("0", rendered.Hints["temperature"]);
+    }
+
+    [Fact]
+    public async Task Interfaces_ShouldBeTestableWithoutProviderDependencies()
+    {
+        var promptId = new PromptId("image-analysis.analyze-document", "1.0.0");
+        var prompt = new PromptSpec(
+            promptId,
+            new[]
+            {
+                new RenderedMessage("system", "Answer only JSON."),
+                new RenderedMessage("user", "Country: {{country}}")
+            },
+            new[] { new PromptVariableSpec("country", isRequired: true, type: "string") });
+
+        IPromptCatalog catalog = new FakeCatalog(prompt);
+        IPromptComposer composer = new PassthroughComposer();
+        IPromptSanitizer sanitizer = new PassthroughSanitizer();
+        IPromptRenderer renderer = new FakeRenderer(catalog, composer, sanitizer);
+
+        var rendered = await renderer.RenderAsync(promptId, new PromptArgs(new Dictionary<string, object?>
+        {
+            ["country"] = "BR"
+        }));
+
+        Assert.Equal(promptId, rendered.Id);
+        Assert.Equal(2, rendered.Messages.Count);
+        Assert.Equal("dev-sha256", rendered.ContentSha256);
+    }
+
+    private sealed class FakeCatalog : IPromptCatalog
+    {
+        private readonly PromptSpec _prompt;
+
+        public FakeCatalog(PromptSpec prompt)
+        {
+            _prompt = prompt;
+        }
+
+        public ValueTask<PromptSpec?> GetAsync(PromptId id, CancellationToken cancellationToken = default)
+        {
+            return ValueTask.FromResult<PromptSpec?>(_prompt.Id == id ? _prompt : null);
+        }
+    }
+
+    private sealed class PassthroughComposer : IPromptComposer
+    {
+        public ValueTask<PromptSpec> ComposeAsync(PromptSpec prompt, CancellationToken cancellationToken = default)
+        {
+            return ValueTask.FromResult(prompt);
+        }
+    }
+
+    private sealed class PassthroughSanitizer : IPromptSanitizer
+    {
+        public ValueTask<PromptArgs> SanitizeAsync(PromptSpec prompt, PromptArgs args, CancellationToken cancellationToken = default)
+        {
+            return ValueTask.FromResult(args);
+        }
+    }
+
+    private sealed class FakeRenderer : IPromptRenderer
+    {
+        private readonly IPromptCatalog _catalog;
+        private readonly IPromptComposer _composer;
+        private readonly IPromptSanitizer _sanitizer;
+
+        public FakeRenderer(IPromptCatalog catalog, IPromptComposer composer, IPromptSanitizer sanitizer)
+        {
+            _catalog = catalog;
+            _composer = composer;
+            _sanitizer = sanitizer;
+        }
+
+        public async ValueTask<RenderedPrompt> RenderAsync(PromptId id, PromptArgs args, CancellationToken cancellationToken = default)
+        {
+            var spec = await _catalog.GetAsync(id, cancellationToken)
+                       ?? throw new InvalidOperationException("Prompt not found.");
+
+            _ = await _composer.ComposeAsync(spec, cancellationToken);
+            _ = await _sanitizer.SanitizeAsync(spec, args, cancellationToken);
+
+            return new RenderedPrompt(
+                id,
+                contentSha256: "dev-sha256",
+                messages: spec.Parts,
+                packageVersion: "test");
+        }
+    }
+}
