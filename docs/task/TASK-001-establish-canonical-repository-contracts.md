@@ -1,6 +1,6 @@
 # GH-001 — Establish canonical repository contracts
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-1
 - **Phase:** F0
 - **Source:** PRD 10.1, ADR-003 sections 3, 7
@@ -27,6 +27,6 @@ Definir e materializar a estrutura canônica do repositório com separação cla
 
 ## Acceptance criteria
 
-- [ ] Estrutura mínima do repo existe e está documentada.
-- [ ] Convenção `prompts/{domain}/{slug}/{semver}.yaml` aplicada.
-- [ ] `catalog.yaml` sem órfãos e sem entradas quebradas.
+- [x] Estrutura mínima do repo existe e está documentada.
+- [x] Convenção `prompts/{domain}/{slug}/{semver}.yaml` aplicada.
+- [x] `catalog.yaml` sem órfãos e sem entradas quebradas.
