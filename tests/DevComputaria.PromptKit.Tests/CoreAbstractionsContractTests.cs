@@ -1,4 +1,6 @@
 using DevComputaria.PromptKit.Abstractions;
+using DevComputaria.PromptKit.Catalogs;
+using DevComputaria.PromptKit.Exceptions;
 using Xunit;
 
 namespace DevComputaria.PromptKit.Tests;
@@ -103,7 +105,7 @@ public sealed class CoreAbstractionsContractTests
             },
             new[] { new PromptVariableSpec("country", isRequired: true, type: "string") });
 
-        IPromptCatalog catalog = new FakeCatalog(prompt);
+        IPromptCatalog catalog = new InMemoryPromptCatalog(new[] { prompt });
         IPromptComposer composer = new PassthroughComposer();
         IPromptSanitizer sanitizer = new PassthroughSanitizer();
         IPromptRenderer renderer = new FakeRenderer(catalog, composer, sanitizer);
@@ -118,19 +120,55 @@ public sealed class CoreAbstractionsContractTests
         Assert.Equal("dev-sha256", rendered.ContentSha256);
     }
 
-    private sealed class FakeCatalog : IPromptCatalog
+    [Fact]
+    public async Task InMemoryPromptCatalog_ShouldResolveExistingPromptByIdAndVersion()
     {
-        private readonly PromptSpec _prompt;
+        var prompt = new PromptSpec(
+            new PromptId("image-analysis.analyze-document", "1.0.0"),
+            new[] { new RenderedMessage("system", "Answer only JSON.") });
 
-        public FakeCatalog(PromptSpec prompt)
-        {
-            _prompt = prompt;
-        }
+        var catalog = new InMemoryPromptCatalog(new[] { prompt });
 
-        public ValueTask<PromptSpec?> GetAsync(PromptId id, CancellationToken cancellationToken = default)
+        var resolved = await catalog.GetAsync(new PromptId("image-analysis.analyze-document", "1.0.0"));
+
+        Assert.Same(prompt, resolved);
+    }
+
+    [Fact]
+    public async Task InMemoryPromptCatalog_ShouldThrowSpecificExceptionWhenPromptNameDoesNotExist()
+    {
+        var prompt = new PromptSpec(
+            new PromptId("image-analysis.analyze-document", "1.0.0"),
+            new[] { new RenderedMessage("system", "Answer only JSON.") });
+
+        var catalog = new InMemoryPromptCatalog(new[] { prompt });
+
+        var exception = await Assert.ThrowsAsync<PromptNotFoundException>(async () =>
+            await catalog.GetAsync(new PromptId("image-analysis.classify-intent", "1.0.0")));
+
+        Assert.Contains("image-analysis.classify-intent@1.0.0", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task InMemoryPromptCatalog_ShouldThrowVersionMismatchWhenPromptVersionDoesNotExist()
+    {
+        var prompts = new[]
         {
-            return ValueTask.FromResult<PromptSpec?>(_prompt.Id == id ? _prompt : null);
-        }
+            new PromptSpec(
+                new PromptId("image-analysis.analyze-document", "1.0.0"),
+                new[] { new RenderedMessage("system", "v1") }),
+            new PromptSpec(
+                new PromptId("image-analysis.analyze-document", "1.1.0"),
+                new[] { new RenderedMessage("system", "v1.1") })
+        };
+
+        var catalog = new InMemoryPromptCatalog(prompts);
+
+        var exception = await Assert.ThrowsAsync<PromptVersionMismatchException>(async () =>
+            await catalog.GetAsync(new PromptId("image-analysis.analyze-document", "2.0.0")));
+
+        Assert.Contains("image-analysis.analyze-document@2.0.0", exception.Message, StringComparison.Ordinal);
+        Assert.Equal(new[] { "1.0.0", "1.1.0" }, exception.AvailableVersions);
     }
 
     private sealed class PassthroughComposer : IPromptComposer
@@ -164,8 +202,7 @@ public sealed class CoreAbstractionsContractTests
 
         public async ValueTask<RenderedPrompt> RenderAsync(PromptId id, PromptArgs args, CancellationToken cancellationToken = default)
         {
-            var spec = await _catalog.GetAsync(id, cancellationToken)
-                       ?? throw new InvalidOperationException("Prompt not found.");
+            var spec = await _catalog.GetAsync(id, cancellationToken);
 
             _ = await _composer.ComposeAsync(spec, cancellationToken);
             _ = await _sanitizer.SanitizeAsync(spec, args, cancellationToken);

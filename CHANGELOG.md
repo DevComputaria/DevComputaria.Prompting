@@ -8,7 +8,6 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 
 ### Planned
 
-- GH-003 — Resolve prompt by id/version.
 - GH-004 — Enforce variable validation.
 - GH-005 — Render with secure sandbox.
 - GH-006 — Produce stable content hash.
@@ -74,6 +73,11 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
   - `IPromptRenderer`
   - `IPromptComposer`
   - `IPromptSanitizer`
+- PromptKit in-memory versioned catalog support in `src/DevComputaria.PromptKit/Catalogs/InMemoryPromptCatalog.cs`.
+- Explicit catalog exception types:
+  - `PromptCatalogException`
+  - `PromptNotFoundException`
+  - `PromptVersionMismatchException`
 - Public contract tests for PromptKit core abstractions in `tests/DevComputaria.PromptKit.Tests/CoreAbstractionsContractTests.cs`.
 
 ### Changed
@@ -82,17 +86,21 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - Product planning was expanded into a deeper technical PRD with explicit functional requirements, runtime boundaries, and a two-PR delivery strategy.
 - Task governance was formalized with dependency-aware tracking and execution status updates.
 - Central package version management was updated to include test infrastructure dependencies for xUnit-based validation.
+- `IPromptCatalog` was tightened from nullable lookup semantics to deterministic resolution with explicit catalog failures.
+- `README.md` was expanded from a brief repository note into an architectural overview, then refined to keep the canonical folder design while removing delivery-status noise.
 
 ### Verified
 
 - GH-000 completed: bootstrap structure and solution build validated.
 - GH-001 completed: canonical repository contracts documented and catalog consistency verified.
 - GH-002 completed: PromptKit runtime abstractions implemented with immutable public contracts and tests.
+- GH-003 completed: deterministic prompt lookup by `id + version` implemented with explicit not-found and version-mismatch exceptions.
 - Full solution build succeeded in Release configuration with 0 errors and 0 warnings.
 - PromptKit test suite passed for core abstraction contracts.
+- PromptKit test suite passed expanded lookup/error coverage for the versioned catalog contract.
 
 ### Notes
 
 - Production contract remains domain-agnostic and provider-agnostic in `DevComputaria.PromptKit`.
 - Current implementation intentionally avoids provider SDKs and HTTP dependencies.
-- The next execution target in sequence is `GH-003`.
+- The next execution target in sequence is `GH-004`.

@@ -1,6 +1,6 @@
 # GH-003 — Resolve prompt by id/version
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-1
 - **Phase:** F1
 - **Source:** PRD 10.3, ADR-001 section 2.5
@@ -26,6 +26,6 @@ Disponibilizar resolução determinística de prompt por `id + version` com trat
 
 ## Acceptance criteria
 
-- [ ] Lookup existente funciona.
-- [ ] Prompt inexistente gera exceção específica.
-- [ ] Versão incompatível gera erro claro.
+- [x] Lookup existente funciona.
+- [x] Prompt inexistente gera exceção específica.
+- [x] Versão incompatível gera erro claro.
