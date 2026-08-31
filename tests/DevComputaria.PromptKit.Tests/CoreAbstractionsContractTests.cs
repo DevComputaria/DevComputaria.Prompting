@@ -1,6 +1,7 @@
 using DevComputaria.PromptKit.Abstractions;
 using DevComputaria.PromptKit.Catalogs;
 using DevComputaria.PromptKit.Exceptions;
+using DevComputaria.PromptKit.Validation;
 using Xunit;
 
 namespace DevComputaria.PromptKit.Tests;
@@ -107,7 +108,7 @@ public sealed class CoreAbstractionsContractTests
 
         IPromptCatalog catalog = new InMemoryPromptCatalog(new[] { prompt });
         IPromptComposer composer = new PassthroughComposer();
-        IPromptSanitizer sanitizer = new PassthroughSanitizer();
+        IPromptSanitizer sanitizer = new VariableValidator();
         IPromptRenderer renderer = new FakeRenderer(catalog, composer, sanitizer);
 
         var rendered = await renderer.RenderAsync(promptId, new PromptArgs(new Dictionary<string, object?>
@@ -118,6 +119,79 @@ public sealed class CoreAbstractionsContractTests
         Assert.Equal(promptId, rendered.Id);
         Assert.Equal(2, rendered.Messages.Count);
         Assert.Equal("dev-sha256", rendered.ContentSha256);
+    }
+
+    [Fact]
+    public async Task VariableValidator_ShouldThrowSpecificExceptionWhenRequiredVariableIsMissing()
+    {
+        var prompt = new PromptSpec(
+            new PromptId("image-analysis.analyze-document", "1.0.0"),
+            new[] { new RenderedMessage("system", "Answer only JSON.") },
+            new[]
+            {
+                new PromptVariableSpec("country", isRequired: true, type: "string"),
+                new PromptVariableSpec("ocr_text", isRequired: true, redactedInLogs: true, type: "string")
+            });
+
+        IPromptSanitizer validator = new VariableValidator();
+
+        var exception = await Assert.ThrowsAsync<MissingRequiredVariableException>(async () =>
+            await validator.SanitizeAsync(prompt, new PromptArgs(new Dictionary<string, object?>
+            {
+                ["country"] = "BR"
+            })));
+
+        Assert.Equal(prompt.Id, exception.PromptId);
+        Assert.Equal(new[] { "ocr_text" }, exception.MissingVariables);
+        Assert.Contains("ocr_text", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task VariableValidator_ShouldTreatNullOrWhitespaceRequiredValuesAsMissing()
+    {
+        var prompt = new PromptSpec(
+            new PromptId("image-analysis.analyze-document", "1.0.0"),
+            new[] { new RenderedMessage("system", "Answer only JSON.") },
+            new[]
+            {
+                new PromptVariableSpec("country", isRequired: true, type: "string"),
+                new PromptVariableSpec("document_type", isRequired: true, type: "string")
+            });
+
+        IPromptSanitizer validator = new VariableValidator();
+
+        var exception = await Assert.ThrowsAsync<MissingRequiredVariableException>(async () =>
+            await validator.SanitizeAsync(prompt, new PromptArgs(new Dictionary<string, object?>
+            {
+                ["country"] = "   ",
+                ["document_type"] = null
+            })));
+
+        Assert.Equal(new[] { "country", "document_type" }, exception.MissingVariables);
+    }
+
+    [Fact]
+    public async Task VariableValidator_ShouldAllowOptionalVariablesToBeMissing()
+    {
+        var prompt = new PromptSpec(
+            new PromptId("image-analysis.analyze-document", "1.0.0"),
+            new[] { new RenderedMessage("system", "Answer only JSON.") },
+            new[]
+            {
+                new PromptVariableSpec("country", isRequired: true, type: "string"),
+                new PromptVariableSpec("notes", isRequired: false, type: "string")
+            });
+
+        IPromptSanitizer validator = new VariableValidator();
+
+        var sanitized = await validator.SanitizeAsync(prompt, new PromptArgs(new Dictionary<string, object?>
+        {
+            ["country"] = "BR"
+        }));
+
+        Assert.Same(sanitized, sanitized);
+        Assert.Equal("BR", sanitized["country"]);
+        Assert.False(sanitized.ContainsKey("notes"));
     }
 
     [Fact]
@@ -176,14 +250,6 @@ public sealed class CoreAbstractionsContractTests
         public ValueTask<PromptSpec> ComposeAsync(PromptSpec prompt, CancellationToken cancellationToken = default)
         {
             return ValueTask.FromResult(prompt);
-        }
-    }
-
-    private sealed class PassthroughSanitizer : IPromptSanitizer
-    {
-        public ValueTask<PromptArgs> SanitizeAsync(PromptSpec prompt, PromptArgs args, CancellationToken cancellationToken = default)
-        {
-            return ValueTask.FromResult(args);
         }
     }
 

@@ -24,7 +24,7 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 | GH-001 | Establish canonical repository contracts | PR-1 | F0 | GH-000 | done | 2026-08-30 | [TASK-001](./TASK-001-establish-canonical-repository-contracts.md) | Base estrutural |
 | GH-002 | Implement PromptKit core abstractions | PR-1 | F1 | GH-001 | done | 2026-08-30 | [TASK-002](./TASK-002-implement-promptkit-core-abstractions.md) | Contrato runtime |
 | GH-003 | Resolve prompt by id/version | PR-1 | F1 | GH-002 | done | 2026-08-30 | [TASK-003](./TASK-003-resolve-prompt-by-id-version.md) | Lookup determinístico |
-| GH-004 | Enforce variable validation | PR-1 | F1 | GH-002 | todo | 2026-08-30 | [TASK-004](./TASK-004-enforce-variable-validation.md) | Required args |
+| GH-004 | Enforce variable validation | PR-1 | F1 | GH-002 | done | 2026-08-30 | [TASK-004](./TASK-004-enforce-variable-validation.md) | Required args |
 | GH-005 | Render with secure sandbox | PR-1 | F1 | GH-002, GH-004 | todo | 2026-08-30 | [TASK-005](./TASK-005-render-with-secure-sandbox.md) | Segurança template |
 | GH-006 | Produce stable content hash | PR-1 | F1 | GH-005 | todo | 2026-08-30 | [TASK-006](./TASK-006-produce-stable-content-hash.md) | Rastreabilidade |
 | GH-007 | Register services via DI | PR-1 | F1/F2 | GH-002, GH-003 | todo | 2026-08-30 | [TASK-007](./TASK-007-register-services-via-di.md) | Bootstrap |
@@ -45,3 +45,4 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 - 2026-08-30: Execução da `GH-001` concluída (convenções documentadas + validação de consistência do `catalog.yaml`).
 - 2026-08-30: Execução da `GH-002` concluída (abstrações core + interfaces públicas + testes de contrato no `PromptKit`).
 - 2026-08-30: Execução da `GH-003` concluída (lookup determinístico por `id + version` + exceções diagnósticas de catálogo).
+- 2026-08-30: Execução da `GH-004` concluída (validação antecipada de variáveis obrigatórias + exceção específica de contrato).
