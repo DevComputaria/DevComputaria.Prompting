@@ -1,6 +1,6 @@
 # GH-008 — Implement packed catalog loader
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-1
 - **Phase:** F2
 - **Source:** PRD 10.8, ADR-003 section 5
@@ -26,6 +26,6 @@ Implementar carregamento de YAML embarcado e hidratação de `PromptSpec` para c
 
 ## Acceptance criteria
 
-- [ ] Prompt YAML válido é carregado corretamente.
-- [ ] Lookup por id/version funciona no catálogo packed.
-- [ ] Resource names estáveis e previsíveis.
+- [x] Prompt YAML válido é carregado corretamente.
+- [x] Lookup por id/version funciona no catálogo packed.
+- [x] Resource names estáveis e previsíveis.
