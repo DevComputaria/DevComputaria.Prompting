@@ -1,6 +1,6 @@
 # GH-005 — Render with secure sandbox
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-1
 - **Phase:** F1
 - **Source:** PRD 10.5, ADR-001 section 2.7
@@ -26,6 +26,6 @@ Implementar renderização de template com sandbox para bloquear helpers insegur
 
 ## Acceptance criteria
 
-- [ ] Interpolação básica funciona.
-- [ ] Helpers proibidos são bloqueados.
-- [ ] Logs não vazam informação sensível.
+- [x] Interpolação básica funciona.
+- [x] Helpers proibidos são bloqueados.
+- [x] Logs não vazam informação sensível.
