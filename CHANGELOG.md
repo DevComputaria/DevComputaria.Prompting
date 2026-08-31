@@ -8,7 +8,6 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 
 ### Planned
 
-- GH-009 — Enforce manifest/resource consistency.
 - GH-010 — Validate schema and immutability gates.
 - GH-011 — Provide CLI contract commands.
 - GH-012 — Implement CI publish gates.
@@ -94,11 +93,14 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
   - `src/DevComputaria.Prompts/Catalogs/YamlPromptLoader.cs`
   - `src/DevComputaria.Prompts/Catalogs/PromptManifest.cs`
   - `src/DevComputaria.Prompts/Catalogs/PromptResourceNames.cs`
+  - `src/DevComputaria.Prompts/Catalogs/PromptManifestConsistencyValidator.cs`
+  - `src/DevComputaria.Prompts/Catalogs/PromptManifestConsistencyException.cs`
 - Public contract tests for PromptKit core abstractions in `tests/DevComputaria.PromptKit.Tests/CoreAbstractionsContractTests.cs`.
 - Dedicated renderer safety tests in `tests/DevComputaria.PromptKit.Tests/HandlebarsPromptRendererTests.cs`.
 - Dedicated hash stability tests in `tests/DevComputaria.PromptKit.Tests/PromptHasherTests.cs`.
 - Dedicated DI registration tests in `tests/DevComputaria.Prompts.Tests/ServiceRegistrationTests.cs`.
 - Dedicated packed loader tests in `tests/DevComputaria.Prompts.Tests/PackedCatalogLoaderTests.cs`.
+- Dedicated manifest/resource consistency tests in `tests/DevComputaria.Prompts.Tests/PromptManifestConsistencyValidatorTests.cs`.
 
 ### Changed
 
@@ -113,6 +115,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - `RenderedPrompt.ContentSha256` is now produced by a dedicated canonical hasher that includes relevant prompt spec, arguments, and rendered content.
 - Runtime and packed catalog bootstrapping now support DI-first registration with environment-aware directory override normalization.
 - Packed prompt loading is now split into manifest parsing, YAML hydration, and stable logical resource naming for deterministic embedded resolution.
+- Packed catalog construction now validates alias, manifest, and embedded resource consistency before runtime use.
 
 ### Verified
 
@@ -125,6 +128,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - GH-006 completed: stable SHA-256 content hashing implemented with deterministic serialization and regression coverage.
 - GH-007 completed: AddPromptKit/AddPackedPrompts registration flow implemented and validated through service-resolution tests.
 - GH-008 completed: embedded YAML prompt loading and packed catalog hydration implemented with explicit manifest and logical-name conventions.
+- GH-009 completed: manifest/resource consistency enforcement implemented with blocking tests for broken aliases, missing files, and orphan resources.
 - Full solution build succeeded in Release configuration with 0 errors and 0 warnings.
 - PromptKit test suite passed for core abstraction contracts.
 - PromptKit test suite passed expanded lookup/error coverage for the versioned catalog contract.
@@ -133,9 +137,10 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - PromptKit test suite passed stable-hash, ordering-insensitive args, and relevant-change hash coverage.
 - Prompts test suite passed service registration, default packed catalog resolution, and production override suppression scenarios.
 - Prompts test suite passed YAML hydration, packed lookup by id/version, manifest expansion, and predictable embedded resource naming.
+- Prompts test suite passed consistency checks for broken aliases, missing manifest resources, orphans, and current assembly validation.
 
 ### Notes
 
 - Production contract remains domain-agnostic and provider-agnostic in `DevComputaria.PromptKit`.
 - Current implementation intentionally avoids provider SDKs and HTTP dependencies.
-- The next execution target in sequence is `GH-009`.
+- The next execution target in sequence is `GH-010`.

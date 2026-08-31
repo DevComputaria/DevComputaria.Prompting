@@ -29,7 +29,7 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 | GH-006 | Produce stable content hash | PR-1 | F1 | GH-005 | done | 2026-08-30 | [TASK-006](./TASK-006-produce-stable-content-hash.md) | Rastreabilidade |
 | GH-007 | Register services via DI | PR-1 | F1/F2 | GH-002, GH-003 | done | 2026-08-30 | [TASK-007](./TASK-007-register-services-via-di.md) | Bootstrap |
 | GH-008 | Implement packed catalog loader | PR-1 | F2 | GH-001, GH-002 | done | 2026-08-30 | [TASK-008](./TASK-008-implement-packed-catalog-loader.md) | YAML -> PromptSpec |
-| GH-009 | Enforce manifest/resource consistency | PR-1 | F2 | GH-008 | todo | 2026-08-30 | [TASK-009](./TASK-009-enforce-manifest-resource-consistency.md) | Integridade do pacote |
+| GH-009 | Enforce manifest/resource consistency | PR-1 | F2 | GH-008 | done | 2026-08-30 | [TASK-009](./TASK-009-enforce-manifest-resource-consistency.md) | Integridade do pacote |
 | GH-010 | Validate schema and immutability gates | PR-2 | F3 | GH-009 | todo | 2026-08-30 | [TASK-010](./TASK-010-validate-schema-and-immutability-gates.md) | Gate de contrato |
 | GH-011 | Provide CLI contract commands | PR-2 | F3 | GH-010 | todo | 2026-08-30 | [TASK-011](./TASK-011-provide-cli-contract-commands.md) | Ferramentas locais |
 | GH-012 | Implement CI publish gates | PR-2 | F3 | GH-010, GH-011 | todo | 2026-08-30 | [TASK-012](./TASK-012-implement-ci-publish-gates.md) | Bloqueio de publish |
@@ -50,3 +50,4 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 - 2026-08-30: Execução da `GH-006` concluída (hash canônico SHA-256 com serialização determinística de spec + args + render).
 - 2026-08-30: Execução da `GH-007` concluída (bootstrap de DI para runtime + catálogo packed + options de override controladas por ambiente).
 - 2026-08-30: Execução da `GH-008` concluída (loader YAML embarcado + manifesto de catálogo + convenção estável de `LogicalName`).
+- 2026-08-30: Execução da `GH-009` concluída (consistência entre manifesto, aliases e embedded resources validada por bateria de testes bloqueante).

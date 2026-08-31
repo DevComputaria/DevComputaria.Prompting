@@ -1,6 +1,6 @@
 # GH-009 — Enforce manifest/resource consistency
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-1
 - **Phase:** F2
 - **Source:** PRD 10.9, ADR-002 section 2.11
@@ -25,6 +25,6 @@ Garantir consistência entre `catalog.yaml`, manifesto e recursos embutidos.
 
 ## Acceptance criteria
 
-- [ ] Alias quebrado falha em teste.
-- [ ] Entrada sem arquivo falha em teste.
-- [ ] Publicação bloqueada em inconsistência.
+- [x] Alias quebrado falha em teste.
+- [x] Entrada sem arquivo falha em teste.
+- [x] Publicação bloqueada em inconsistência.

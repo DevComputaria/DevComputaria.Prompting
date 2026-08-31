@@ -8,11 +8,14 @@ public sealed class PackedPromptCatalog : IPromptCatalog
 {
     private readonly InMemoryPromptCatalog _inner;
     private readonly PromptManifest _manifest;
+    private readonly PromptManifestConsistencyValidator _consistencyValidator;
 
     public PackedPromptCatalog(Assembly assembly)
     {
         ArgumentNullException.ThrowIfNull(assembly);
+        _consistencyValidator = new PromptManifestConsistencyValidator();
         _manifest = PromptManifest.Load(assembly);
+        _consistencyValidator.ValidateOrThrow(assembly, _manifest);
         _inner = new InMemoryPromptCatalog(LoadPrompts(assembly, _manifest, new YamlPromptLoader()));
     }
 
