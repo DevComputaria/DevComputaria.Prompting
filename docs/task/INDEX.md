@@ -26,7 +26,7 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 | GH-003 | Resolve prompt by id/version | PR-1 | F1 | GH-002 | done | 2026-08-30 | [TASK-003](./TASK-003-resolve-prompt-by-id-version.md) | Lookup determinístico |
 | GH-004 | Enforce variable validation | PR-1 | F1 | GH-002 | done | 2026-08-30 | [TASK-004](./TASK-004-enforce-variable-validation.md) | Required args |
 | GH-005 | Render with secure sandbox | PR-1 | F1 | GH-002, GH-004 | done | 2026-08-30 | [TASK-005](./TASK-005-render-with-secure-sandbox.md) | Segurança template |
-| GH-006 | Produce stable content hash | PR-1 | F1 | GH-005 | todo | 2026-08-30 | [TASK-006](./TASK-006-produce-stable-content-hash.md) | Rastreabilidade |
+| GH-006 | Produce stable content hash | PR-1 | F1 | GH-005 | done | 2026-08-30 | [TASK-006](./TASK-006-produce-stable-content-hash.md) | Rastreabilidade |
 | GH-007 | Register services via DI | PR-1 | F1/F2 | GH-002, GH-003 | todo | 2026-08-30 | [TASK-007](./TASK-007-register-services-via-di.md) | Bootstrap |
 | GH-008 | Implement packed catalog loader | PR-1 | F2 | GH-001, GH-002 | todo | 2026-08-30 | [TASK-008](./TASK-008-implement-packed-catalog-loader.md) | YAML -> PromptSpec |
 | GH-009 | Enforce manifest/resource consistency | PR-1 | F2 | GH-008 | todo | 2026-08-30 | [TASK-009](./TASK-009-enforce-manifest-resource-consistency.md) | Integridade do pacote |
@@ -47,3 +47,4 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 - 2026-08-30: Execução da `GH-003` concluída (lookup determinístico por `id + version` + exceções diagnósticas de catálogo).
 - 2026-08-30: Execução da `GH-004` concluída (validação antecipada de variáveis obrigatórias + exceção específica de contrato).
 - 2026-08-30: Execução da `GH-005` concluída (renderização com sandbox seguro + bloqueio de helpers inseguros).
+- 2026-08-30: Execução da `GH-006` concluída (hash canônico SHA-256 com serialização determinística de spec + args + render).

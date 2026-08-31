@@ -1,6 +1,6 @@
 # GH-006 — Produce stable content hash
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-1
 - **Phase:** F1
 - **Source:** PRD 10.6, ADR-001 section 2.6, ADR-002 section 2.9
@@ -26,6 +26,6 @@ Gerar hash canônico estável para rastreabilidade e replay de execução.
 
 ## Acceptance criteria
 
-- [ ] Mesmo input gera mesmo hash.
-- [ ] Mudança relevante altera hash.
-- [ ] Resultado reproduzível em CI.
+- [x] Mesmo input gera mesmo hash.
+- [x] Mudança relevante altera hash.
+- [x] Resultado reproduzível em CI.

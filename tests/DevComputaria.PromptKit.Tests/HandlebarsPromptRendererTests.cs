@@ -1,6 +1,7 @@
 using DevComputaria.PromptKit.Abstractions;
 using DevComputaria.PromptKit.Catalogs;
 using DevComputaria.PromptKit.Exceptions;
+using DevComputaria.PromptKit.Hashing;
 using DevComputaria.PromptKit.Rendering;
 using DevComputaria.PromptKit.Validation;
 using Xunit;
@@ -41,6 +42,71 @@ public sealed class HandlebarsPromptRendererTests
         Assert.Equal("Type=identity-card\nNo notes", rendered.Messages[1].Content);
         Assert.Equal("handlebars-sandbox", rendered.Hints["renderer"]);
         Assert.False(string.IsNullOrWhiteSpace(rendered.ContentSha256));
+    }
+
+    [Fact]
+    public async Task RenderAsync_ShouldProduceStableHashForSameInput()
+    {
+        var promptId = new PromptId("image-analysis.analyze-document", "1.0.0");
+        var prompt = new PromptSpec(
+            promptId,
+            new[]
+            {
+                new RenderedMessage("system", "Country={{country}}"),
+                new RenderedMessage("user", "Type={{document_type}}")
+            },
+            new[]
+            {
+                new PromptVariableSpec("country", isRequired: true, type: "string"),
+                new PromptVariableSpec("document_type", isRequired: true, type: "string")
+            },
+            includes: new[] { "_shared/json-only" },
+            outputSchemaRef: "schemas/output/image-analysis-document-v1.json");
+
+        var renderer = CreateRenderer(prompt);
+        var args = new PromptArgs(new Dictionary<string, object?>
+        {
+            ["document_type"] = "identity-card",
+            ["country"] = "BR"
+        });
+
+        var renderedA = await renderer.RenderAsync(promptId, args);
+        var renderedB = await renderer.RenderAsync(promptId, args);
+
+        Assert.Equal(renderedA.ContentSha256, renderedB.ContentSha256);
+    }
+
+    [Fact]
+    public async Task RenderAsync_ShouldChangeHashWhenRenderedContentChanges()
+    {
+        var promptId = new PromptId("image-analysis.analyze-document", "1.0.0");
+        var prompt = new PromptSpec(
+            promptId,
+            new[]
+            {
+                new RenderedMessage("system", "Country={{country}}"),
+                new RenderedMessage("user", "Type={{document_type}}")
+            },
+            new[]
+            {
+                new PromptVariableSpec("country", isRequired: true, type: "string"),
+                new PromptVariableSpec("document_type", isRequired: true, type: "string")
+            });
+
+        var renderer = CreateRenderer(prompt);
+
+        var renderedA = await renderer.RenderAsync(promptId, new PromptArgs(new Dictionary<string, object?>
+        {
+            ["country"] = "BR",
+            ["document_type"] = "identity-card"
+        }));
+        var renderedB = await renderer.RenderAsync(promptId, new PromptArgs(new Dictionary<string, object?>
+        {
+            ["country"] = "US",
+            ["document_type"] = "identity-card"
+        }));
+
+        Assert.NotEqual(renderedA.ContentSha256, renderedB.ContentSha256);
     }
 
     [Fact]
@@ -105,6 +171,7 @@ public sealed class HandlebarsPromptRendererTests
             new PassthroughComposer(),
             new VariableValidator(),
             new TemplateSandbox(),
+                new PromptHasher(),
             packageVersion: "test");
     }
 

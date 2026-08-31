@@ -8,7 +8,6 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 
 ### Planned
 
-- GH-006 — Produce stable content hash.
 - GH-007 — Register services via DI.
 - GH-008 — Implement packed catalog loader.
 - GH-009 — Enforce manifest/resource consistency.
@@ -84,8 +83,11 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
   - `src/DevComputaria.PromptKit/Rendering/TemplateSandbox.cs`
 - Explicit unsafe helper exception type:
   - `UnsafeTemplateHelperException`
+- Canonical content hashing support:
+  - `src/DevComputaria.PromptKit/Hashing/PromptHasher.cs`
 - Public contract tests for PromptKit core abstractions in `tests/DevComputaria.PromptKit.Tests/CoreAbstractionsContractTests.cs`.
 - Dedicated renderer safety tests in `tests/DevComputaria.PromptKit.Tests/HandlebarsPromptRendererTests.cs`.
+- Dedicated hash stability tests in `tests/DevComputaria.PromptKit.Tests/PromptHasherTests.cs`.
 
 ### Changed
 
@@ -97,6 +99,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - `README.md` was expanded from a brief repository note into an architectural overview, then refined to keep the canonical folder design while removing delivery-status noise.
 - Render-time sanitization now enforces required-variable validation before prompt execution continues.
 - Prompt rendering now supports basic interpolation and conditional blocks while rejecting unsafe helper invocation patterns.
+- `RenderedPrompt.ContentSha256` is now produced by a dedicated canonical hasher that includes relevant prompt spec, arguments, and rendered content.
 
 ### Verified
 
@@ -106,14 +109,16 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - GH-003 completed: deterministic prompt lookup by `id + version` implemented with explicit not-found and version-mismatch exceptions.
 - GH-004 completed: required variable validation implemented with a dedicated validator and explicit missing-variable exception.
 - GH-005 completed: secure sandbox rendering implemented with unsafe helper blocking and no sensitive argument leakage in failure messages.
+- GH-006 completed: stable SHA-256 content hashing implemented with deterministic serialization and regression coverage.
 - Full solution build succeeded in Release configuration with 0 errors and 0 warnings.
 - PromptKit test suite passed for core abstraction contracts.
 - PromptKit test suite passed expanded lookup/error coverage for the versioned catalog contract.
 - PromptKit test suite passed positive and negative coverage for required and optional variable validation.
 - PromptKit test suite passed interpolation, conditional rendering, and unsafe-helper blocking scenarios.
+- PromptKit test suite passed stable-hash, ordering-insensitive args, and relevant-change hash coverage.
 
 ### Notes
 
 - Production contract remains domain-agnostic and provider-agnostic in `DevComputaria.PromptKit`.
 - Current implementation intentionally avoids provider SDKs and HTTP dependencies.
-- The next execution target in sequence is `GH-006`.
+- The next execution target in sequence is `GH-007`.

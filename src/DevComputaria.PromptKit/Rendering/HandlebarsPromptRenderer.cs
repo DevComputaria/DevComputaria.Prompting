@@ -1,7 +1,6 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using DevComputaria.PromptKit.Abstractions;
+using DevComputaria.PromptKit.Hashing;
 
 namespace DevComputaria.PromptKit.Rendering;
 
@@ -11,6 +10,7 @@ public sealed partial class HandlebarsPromptRenderer : IPromptRenderer
     private readonly IPromptComposer _composer;
     private readonly IPromptSanitizer _sanitizer;
     private readonly TemplateSandbox _sandbox;
+    private readonly PromptHasher _hasher;
     private readonly string? _packageVersion;
 
     public HandlebarsPromptRenderer(
@@ -18,12 +18,14 @@ public sealed partial class HandlebarsPromptRenderer : IPromptRenderer
         IPromptComposer composer,
         IPromptSanitizer sanitizer,
         TemplateSandbox sandbox,
+        PromptHasher? hasher = null,
         string? packageVersion = null)
     {
         _catalog = catalog;
         _composer = composer;
         _sanitizer = sanitizer;
         _sandbox = sandbox;
+        _hasher = hasher ?? new PromptHasher();
         _packageVersion = string.IsNullOrWhiteSpace(packageVersion) ? null : packageVersion.Trim();
     }
 
@@ -39,7 +41,7 @@ public sealed partial class HandlebarsPromptRenderer : IPromptRenderer
 
         return new RenderedPrompt(
             composed.Id,
-            ComputeHash(renderedMessages),
+            _hasher.ComputeHash(composed, sanitized, renderedMessages),
             renderedMessages,
             packageVersion: _packageVersion,
             hints: new Dictionary<string, string?>
@@ -117,16 +119,6 @@ public sealed partial class HandlebarsPromptRenderer : IPromptRenderer
         return args.TryGetValue(variableName.Trim(), out var value) && value is not null
             ? value.ToString() ?? string.Empty
             : string.Empty;
-    }
-
-    private static string ComputeHash(IEnumerable<RenderedMessage> messages)
-    {
-        var canonical = string.Join(
-            "\n---\n",
-            messages.Select(message => $"role:{message.Role}\ncontent:{message.Content}"));
-
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(canonical));
-        return Convert.ToHexString(hash).ToLowerInvariant();
     }
 
     [GeneratedRegex("\\{\\{#if\\s+([^}]+)\\}\\}(.*?)(\\{\\{else\\}\\}(.*?))?\\{\\{/if\\}\\}", RegexOptions.Singleline | RegexOptions.CultureInvariant)]
