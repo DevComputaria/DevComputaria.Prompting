@@ -1,0 +1,20 @@
+{
+  "promptId": "image-analysis.analyze-document",
+  "version": "1.0.0",
+  "args": {
+    "country": "BR",
+    "document_type": "identity-card",
+    "ocr_text": "OCR-123"
+  },
+  "contentSha256": "39a5c0b4ef96fac1b6bd2862376eddd89d4c964d88e90894b6e27012aeba23d2",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You extract image analysis.\nAnswer only JSON."
+    },
+    {
+      "role": "user",
+      "content": "Country: BR\nType: identity-card\nOCR:\nOCR-123"
+    }
+  ]
+}

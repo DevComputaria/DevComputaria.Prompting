@@ -1,0 +1,12 @@
+{
+  "artifacts": [
+    {
+      "path": "prompts/image-analysis/analyze-document/1.0.0.yaml",
+      "sha256": "370bae45b5fd4d0a15b75abb2f4bb5da94cceb639e6bfc06e7053ff3d84423a1"
+    },
+    {
+      "path": "schemas/output/image-analysis-document-v1.json",
+      "sha256": "a2f5cc710cba2ecb3e8519e366f8e2df3f615773f8d0242c8c16af83e0407156"
+    }
+  ]
+}
