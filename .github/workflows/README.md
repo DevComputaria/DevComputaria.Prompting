@@ -49,9 +49,11 @@ transition that does not exactly match that declaration.
 `pack-promptkit.yml` and `pack-prompts.yml` can only execute their packaging jobs
 after the reusable prompt contract gate succeeds, including all four test
 projects. A successful run uploads the generated `.nupkg` as a workflow artifact
-tied to the commit SHA. A failed test or contract check therefore produces no
-releasable package artifact.
+tied to the commit SHA and publishes that same file to the repository owner's
+GitHub Packages NuGet registry. A failed test or contract check therefore creates
+neither a releasable artifact nor a registry version.
 
-The workflows intentionally do not push directly to NuGet. Promotion uses the
-reviewed workflow artifact and a protected production environment as defined in
+Registry publication runs through the `production` environment with the
+workflow-scoped `GITHUB_TOKEN` and the least-privilege `packages: write`
+permission. Configure required reviewers on that environment as defined in
 `docs/SECURITY-AND-RELEASE-GOVERNANCE.md`.

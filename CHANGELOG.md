@@ -26,6 +26,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - Pull-request release-governance workflow and governed package-version inputs for pack workflows.
 - Security reporting policy and pull-request security/SemVer checklist.
 - Unit-test and contract validation on pull requests and pushes to `main`, reused as a mandatory gate before package creation.
+- Governed publication of validated PromptKit and Prompts packages to the GitHub Packages NuGet registry.
 
 ## [2026-08-30]
 

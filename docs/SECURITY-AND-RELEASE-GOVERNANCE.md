@@ -108,10 +108,12 @@ dotnet run --project tools/DevComputaria.Prompts.Cli -- \
 - [ ] Proposed `X.Y.Z` package version exactly matches the declared impact.
 - [ ] Changelog documents additions, breaking changes, and removed pins.
 - [ ] Governed pack workflow succeeds for the exact reviewed commit SHA.
-- [ ] `.nupkg` is downloaded from the workflow artifact; it is not rebuilt locally.
+- [ ] The governed workflow uploads the `.nupkg` as an audit artifact and publishes
+  that same file to GitHub Packages; it is not rebuilt locally.
 - [ ] Package metadata and SHA-256 are recorded in the release notes.
-- [ ] Publishing occurs only through the protected production environment.
-- [ ] Credentials are environment-scoped, rotated, and absent from logs/artifacts.
+- [ ] Publishing occurs only through the protected `production` environment.
+- [ ] Publication uses the workflow-scoped `GITHUB_TOKEN` with `packages: write`;
+  credentials are short-lived and absent from logs/artifacts.
 - [ ] Protected `vX.Y.Z` tag points to the packaged commit.
 
 ### After release
@@ -128,5 +130,6 @@ dotnet run --project tools/DevComputaria.Prompts.Cli -- \
 - SemVer and immutability: `ReleaseGovernanceValidatorTests`.
 - Pull-request enforcement: `.github/workflows/release-governance.yml`.
 - Contract enforcement: `.github/workflows/validate-prompts.yml`.
-- Package version enforcement: `pack-promptkit.yml` and `pack-prompts.yml`.
+- Package version enforcement and GitHub Packages publication: `pack-promptkit.yml`
+  and `pack-prompts.yml`.
 

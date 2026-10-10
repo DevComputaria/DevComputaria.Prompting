@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   contract-gate:
@@ -30,6 +31,7 @@ jobs:
     name: pack PromptKit
     needs: contract-gate
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 15
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -67,6 +69,10 @@ jobs:
           dotnet pack src/DevComputaria.PromptKit/DevComputaria.PromptKit.csproj
           --configuration Release --no-restore --output artifacts
           -p:PackageVersion="${{ inputs['package-version'] }}"
+          -p:RepositoryUrl="${{ github.server_url }}/${{ github.repository }}"
+          -p:RepositoryType=git
+          -p:PublishRepositoryUrl=true
+          -p:ContinuousIntegrationBuild=true
 
       - name: Publish package artifact
         uses: actions/upload-artifact@v4
@@ -75,3 +81,12 @@ jobs:
           path: artifacts/*.nupkg
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish package to GitHub Packages
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          dotnet nuget push "artifacts/*.nupkg"
+          --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          --api-key "$NUGET_AUTH_TOKEN"
+          --skip-duplicate
