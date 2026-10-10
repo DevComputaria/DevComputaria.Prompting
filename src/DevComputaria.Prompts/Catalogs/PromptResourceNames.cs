@@ -25,4 +25,32 @@ public static class PromptResourceNames
                && !resourceName.Equals(Catalog, StringComparison.Ordinal)
                && !resourceName.StartsWith("prompts._shared/", StringComparison.Ordinal);
     }
+
+    public static string SkillFile(string skillId, string version)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(skillId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(version);
+        var parts = skillId.Trim().Split('.', 2, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length != 2)
+        {
+            throw new ArgumentException("Skill id must follow the '{domain}.{slug}' format.", nameof(skillId));
+        }
+
+        return $"skills.{parts[0]}/{parts[1]}/{version.Trim()}.yaml";
+    }
+
+    public static bool IsSkillFile(string resourceName)
+        => resourceName.StartsWith("skills.", StringComparison.Ordinal)
+           && resourceName.EndsWith(".yaml", StringComparison.Ordinal);
+
+    public static string OutputSchemaFile(string schemaRef)
+    {
+        const string prefix = "schemas/output/";
+        if (!schemaRef.StartsWith(prefix, StringComparison.Ordinal) || schemaRef.Contains("..", StringComparison.Ordinal))
+        {
+            throw new ArgumentException("Output schema reference must be under 'schemas/output/'.", nameof(schemaRef));
+        }
+
+        return "schemas.output." + schemaRef[prefix.Length..];
+    }
 }

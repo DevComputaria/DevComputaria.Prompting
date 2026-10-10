@@ -15,10 +15,14 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - Reusable prompt contract workflow covering CLI validation, catalog consistency, schemas, immutability, and render fixtures.
 - Gated `DevComputaria.Prompts` package workflow that uploads a `.nupkg` artifact only after contract validation succeeds.
 - End-to-end `Consumer.ImageAnalysis` sample with pinned rendering, metadata output, and a deterministic fake chat client.
+- Prompt contract v1.1 with sibling Markdown resolution through `parts[].from` and hash participation.
+- Compact output-schema injection through `inject_as` and `inject_format: compact_example` without caller-supplied schema arguments.
+- Explicitly versioned skills that attach system instructions and provider-neutral tools to `RenderedPrompt`.
+- Incremental `PromptPins` source generator backed by the versions published in `prompts/catalog.yaml`.
+- `image-analysis.analyze-document@1.1.0` and `image-analysis.document-extractor@1.0.0` packed artifacts.
 
 ### Planned
 
-- GH-014 — Implement extension set v1.1.
 - GH-015 — Security, authorization and release governance.
 
 ## [2026-08-30]
@@ -133,6 +137,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - The task index and GH-011 task file now record the CLI contract commands as completed.
 - The prompts packaging workflow now requires the reusable contract gate before producing a release artifact.
 - The prompt validation workflow now runs the end-to-end sample with Production directory-override suppression.
+- The end-to-end sample now consumes the generated v1.1 prompt pin and prints attached tools.
 
 ### Verified
 
@@ -150,6 +155,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - GH-011 completed: CLI `validate`/`render` commands implemented with consistent exit codes and diagnostic output.
 - GH-012 completed: pull-request validation and package artifact creation are blocked by the prompt contract gate.
 - GH-013 completed: the sample renders the pinned Image Analysis prompt and invokes a fake client without HTTP.
+- GH-014 completed: external Markdown parts, schema injection, versioned skill attachment, tools, and generated prompt pins are covered end to end.
 - Full solution build succeeded in Release configuration with 0 errors and 0 warnings.
 - PromptKit test suite passed for core abstraction contracts.
 - PromptKit test suite passed expanded lookup/error coverage for the versioned catalog contract.

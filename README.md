@@ -95,11 +95,10 @@ O fluxo de uso pretendido é:
 Exemplo conceitual:
 
 ```csharp
-private static readonly PromptId AnalyzeDocument =
-	new("image-analysis.analyze-document", "1.0.0");
+var analyzeDocument = PromptPins.ImageAnalysisAnalyzeDocument.V1_1_0;
 
 var rendered = await promptRenderer.RenderAsync(
-	AnalyzeDocument,
+	analyzeDocument,
 	new PromptArgs(new Dictionary<string, object?>
 	{
 		["document_type"] = "identity-card",
@@ -172,7 +171,12 @@ DevComputaria.Prompting/
 │   │   └── json-only.yaml
 │   └── image-analysis/
 │       └── analyze-document/
-│           └── 1.0.0.yaml
+│           ├── 1.0.0.yaml
+│           ├── 1.1.0.yaml
+│           └── 1.1.0.system.md
+│
+├── skills/
+│   └── image-analysis/document-extractor/1.0.0.yaml
 │
 ├── evals/
 │   └── image-analysis.analyze-document/

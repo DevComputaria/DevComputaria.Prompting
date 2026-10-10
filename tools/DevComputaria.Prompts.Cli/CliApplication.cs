@@ -127,6 +127,7 @@ public sealed class CliApplication
             contentSha256 = rendered.ContentSha256,
             packageVersion = rendered.PackageVersion,
             messages = rendered.Messages.Select(message => new { message.Role, message.Content }),
+            tools = rendered.Tools.Select(tool => new { tool.Name, tool.Description, tool.InputSchemaJson }),
             hints = rendered.Hints
         };
 

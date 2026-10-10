@@ -6,12 +6,13 @@ namespace DevComputaria.Prompts.Catalogs;
 
 public sealed class PromptManifest
 {
-    public PromptManifest(string package, int schema, IReadOnlyDictionary<string, string> aliases, IReadOnlyList<ManifestPromptEntry> prompts)
+    public PromptManifest(string package, int schema, IReadOnlyDictionary<string, string> aliases, IReadOnlyList<ManifestPromptEntry> prompts, IReadOnlyList<ManifestSkillEntry>? skills = null)
     {
         Package = string.IsNullOrWhiteSpace(package) ? throw new ArgumentException("Package cannot be null or empty.", nameof(package)) : package.Trim();
         Schema = schema;
         Aliases = aliases;
         Prompts = prompts;
+        Skills = skills ?? Array.Empty<ManifestSkillEntry>();
     }
 
     public string Package { get; }
@@ -22,8 +23,13 @@ public sealed class PromptManifest
 
     public IReadOnlyList<ManifestPromptEntry> Prompts { get; }
 
+    public IReadOnlyList<ManifestSkillEntry> Skills { get; }
+
     public IEnumerable<ManifestPromptVersion> ExpandVersions()
         => Prompts.SelectMany(prompt => prompt.Versions.Select(version => new ManifestPromptVersion(prompt.Id, version, PromptResourceNames.PromptFile(prompt.Id, version))));
+
+    public IEnumerable<ManifestSkillVersion> ExpandSkillVersions()
+        => Skills.SelectMany(skill => skill.Versions.Select(version => new ManifestSkillVersion(skill.Id, version, PromptResourceNames.SkillFile(skill.Id, version))));
 
     public static PromptManifest Load(Assembly assembly)
     {
@@ -53,12 +59,19 @@ public sealed class PromptManifest
             model.Aliases ?? new Dictionary<string, string>(StringComparer.Ordinal),
             (model.Prompts ?? new List<ManifestPromptEntryModel>())
                 .Select(prompt => new ManifestPromptEntry(prompt.Id, prompt.Versions?.ToArray() ?? Array.Empty<string>(), prompt.Tags?.ToArray() ?? Array.Empty<string>()))
+                .ToArray(),
+            (model.Skills ?? new List<ManifestSkillEntryModel>())
+                .Select(skill => new ManifestSkillEntry(skill.Id, skill.Versions?.ToArray() ?? Array.Empty<string>()))
                 .ToArray());
     }
 
     public sealed record ManifestPromptEntry(string Id, IReadOnlyList<string> Versions, IReadOnlyList<string> Tags);
 
     public sealed record ManifestPromptVersion(string Id, string Version, string ResourceName);
+
+    public sealed record ManifestSkillEntry(string Id, IReadOnlyList<string> Versions);
+
+    public sealed record ManifestSkillVersion(string Id, string Version, string ResourceName);
 
     private sealed class ManifestModel
     {
@@ -69,6 +82,8 @@ public sealed class PromptManifest
         public Dictionary<string, string>? Aliases { get; set; }
 
         public List<ManifestPromptEntryModel>? Prompts { get; set; }
+
+        public List<ManifestSkillEntryModel>? Skills { get; set; }
     }
 
     private sealed class ManifestPromptEntryModel
@@ -78,5 +93,12 @@ public sealed class PromptManifest
         public List<string>? Versions { get; set; }
 
         public List<string>? Tags { get; set; }
+    }
+
+    private sealed class ManifestSkillEntryModel
+    {
+        public string Id { get; set; } = string.Empty;
+
+        public List<string>? Versions { get; set; }
     }
 }

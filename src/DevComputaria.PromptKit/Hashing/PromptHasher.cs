@@ -26,6 +26,12 @@ public sealed class PromptHasher
         builder.AppendLine("prompt.version=" + prompt.Id.Version);
         builder.AppendLine("prompt.outputSchemaRef=" + (prompt.OutputSchemaRef ?? string.Empty));
 
+        if (prompt.OutputInjectAs is not null || prompt.OutputInjectFormat is not null)
+        {
+            builder.AppendLine("prompt.outputInjectAs=" + (prompt.OutputInjectAs ?? string.Empty));
+            builder.AppendLine("prompt.outputInjectFormat=" + (prompt.OutputInjectFormat ?? string.Empty));
+        }
+
         builder.AppendLine("prompt.includes.count=" + prompt.Includes.Count.ToString(CultureInfo.InvariantCulture));
         foreach (var include in prompt.Includes.OrderBy(x => x, StringComparer.Ordinal))
         {
@@ -44,6 +50,29 @@ public sealed class PromptHasher
         {
             builder.AppendLine($"prompt.part[{i}].role={parts[i].Role}");
             builder.AppendLine($"prompt.part[{i}].content={Escape(parts[i].Content)}");
+            var source = parts[i].Source;
+            if (source is not null)
+            {
+                builder.AppendLine($"prompt.part[{i}].source={Escape(source)}");
+            }
+        }
+
+        if (prompt.Skills.Count > 0)
+        {
+            builder.AppendLine("prompt.skills.count=" + prompt.Skills.Count.ToString(CultureInfo.InvariantCulture));
+            foreach (var skill in prompt.Skills)
+            {
+                builder.AppendLine($"prompt.skill={skill.Id}|version={skill.Version}|attach={skill.Attach}");
+            }
+        }
+
+        if (prompt.Tools.Count > 0)
+        {
+            builder.AppendLine("prompt.tools.count=" + prompt.Tools.Count.ToString(CultureInfo.InvariantCulture));
+            foreach (var tool in prompt.Tools)
+            {
+                builder.AppendLine($"prompt.tool={tool.Name}|description={Escape(tool.Description)}|schema={Escape(tool.InputSchemaJson)}");
+            }
         }
 
         var orderedArgs = args.OrderBy(x => x.Key, StringComparer.Ordinal).ToArray();

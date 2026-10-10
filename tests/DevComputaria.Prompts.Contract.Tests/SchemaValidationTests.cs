@@ -10,11 +10,12 @@ public sealed class SchemaValidationTests
     public void PromptYaml_FromRepository_ShouldMatchPromptSchema()
     {
         var schema = File.ReadAllText(ContractTestPaths.ResolveFromRoot("schemas", "prompt.schema.json"));
-        var yaml = File.ReadAllText(ContractTestPaths.ResolveFromRoot("prompts", "image-analysis", "analyze-document", "1.0.0.yaml"));
-
-        var errors = _validator.ValidateYaml(schema, yaml);
-
-        Assert.Empty(errors);
+        var promptDirectory = ContractTestPaths.ResolveFromRoot("prompts", "image-analysis", "analyze-document");
+        foreach (var path in Directory.EnumerateFiles(promptDirectory, "*.yaml", SearchOption.TopDirectoryOnly))
+        {
+            var errors = _validator.ValidateYaml(schema, File.ReadAllText(path));
+            Assert.True(errors.Count == 0, $"{Path.GetFileName(path)}: {string.Join(Environment.NewLine, errors)}");
+        }
     }
 
     [Fact]

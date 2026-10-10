@@ -1,0 +1,16 @@
+id: image-analysis.document-extractor
+version: 1.0.0
+body: |
+  Preserve only information supported by the supplied document.
+tools:
+  - name: record_document_confidence
+    description: Records the confidence assigned to the extracted document.
+    input_schema:
+      type: object
+      required: [confidence]
+      properties:
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+      additionalProperties: false

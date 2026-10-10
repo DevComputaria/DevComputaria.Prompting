@@ -23,14 +23,36 @@
         "required": ["type"]
       }
     },
+    "output": {
+      "type": "object",
+      "properties": {
+        "kind": { "type": "string" },
+        "schema_ref": { "type": "string" },
+        "inject_as": { "type": "string", "minLength": 1 },
+        "inject_format": { "type": "string", "enum": ["compact_example"] }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "version", "attach"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+          "attach": { "type": "string", "enum": ["system", "tool", "both"] }
+        }
+      }
+    },
     "parts": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["role", "template"],
+        "required": ["role"],
         "properties": {
           "role": { "type": "string", "enum": ["system", "developer", "user"] },
-          "template": { "type": "string" }
+          "template": { "type": "string" },
+          "from": { "type": "string", "pattern": "^[^/\\\\]+\\.md$" }
         }
       },
       "minItems": 1

@@ -88,4 +88,47 @@ public sealed class PackedCatalogLoaderTests
         Assert.Equal("prompts.image-analysis/analyze-document/1.0.0.yaml", entries[0].ResourceName);
         Assert.Equal("prompts.image-analysis/analyze-document/1.1.0.yaml", entries[1].ResourceName);
     }
+
+    [Fact]
+    public void YamlPromptLoader_ShouldResolveSiblingMarkdownAndTrackItsSource()
+    {
+        const string yaml = """
+                            id: sample.from
+                            version: 1.1.0
+                            parts:
+                              - role: system
+                                from: system.md
+                            """;
+
+        var prompt = new YamlPromptLoader().Load(yaml, from => from == "system.md" ? "External instructions" : throw new InvalidOperationException());
+
+        Assert.Equal("External instructions", prompt.Parts[0].Content);
+        Assert.Equal("system.md", prompt.Parts[0].Source);
+    }
+
+    [Fact]
+    public async Task PackedPromptCatalog_ShouldComposeV11ExtensionsFromExplicitPins()
+    {
+        var catalog = new PackedPromptCatalog(typeof(PackedPromptCatalog).Assembly);
+
+        var prompt = await catalog.GetAsync(new PromptId("image-analysis.analyze-document", "1.1.0"));
+
+        Assert.Equal("1.1.0.system.md", prompt.Parts[0].Source);
+        Assert.Contains(prompt.Parts, part => part.Content.Contains("Preserve only information", StringComparison.Ordinal));
+        Assert.Equal("image-analysis.document-extractor", Assert.Single(prompt.Skills).Id);
+        Assert.Equal("1.0.0", prompt.Skills[0].Version);
+        var tool = Assert.Single(prompt.Tools);
+        Assert.Equal("record_document_confidence", tool.Name);
+        using var toolSchema = System.Text.Json.JsonDocument.Parse(tool.InputSchemaJson);
+        Assert.Equal(System.Text.Json.JsonValueKind.False, toolSchema.RootElement.GetProperty("additionalProperties").ValueKind);
+        Assert.Equal(0, toolSchema.RootElement.GetProperty("properties").GetProperty("confidence").GetProperty("minimum").GetInt32());
+        Assert.Contains("\"document_type\":\"<string>\"", prompt.InjectedArguments["output_schema"], StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GeneratedPromptPins_ShouldExposeEveryPublishedVersion()
+    {
+        Assert.Equal(new PromptId("image-analysis.analyze-document", "1.0.0"), global::DevComputaria.Prompts.Ids.PromptPins.ImageAnalysisAnalyzeDocument.V1_0_0);
+        Assert.Equal(new PromptId("image-analysis.analyze-document", "1.1.0"), global::DevComputaria.Prompts.Ids.PromptPins.ImageAnalysisAnalyzeDocument.V1_1_0);
+    }
 }

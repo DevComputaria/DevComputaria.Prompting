@@ -9,13 +9,15 @@ public sealed record RenderedPrompt
         string contentSha256,
         IEnumerable<RenderedMessage> messages,
         string? packageVersion = null,
-        IEnumerable<KeyValuePair<string, string?>>? hints = null)
+        IEnumerable<KeyValuePair<string, string?>>? hints = null,
+        IEnumerable<PromptTool>? tools = null)
     {
         Id = id;
         ContentSha256 = Validate(contentSha256, nameof(contentSha256));
         PackageVersion = string.IsNullOrWhiteSpace(packageVersion) ? null : packageVersion.Trim();
         Messages = CopyMessages(messages);
         Hints = CopyHints(hints);
+        Tools = (tools ?? Array.Empty<PromptTool>()).ToArray();
     }
 
     public PromptId Id { get; }
@@ -27,6 +29,8 @@ public sealed record RenderedPrompt
     public IReadOnlyList<RenderedMessage> Messages { get; }
 
     public IReadOnlyDictionary<string, string?> Hints { get; }
+
+    public IReadOnlyList<PromptTool> Tools { get; }
 
     private static IReadOnlyList<RenderedMessage> CopyMessages(IEnumerable<RenderedMessage> messages)
     {
