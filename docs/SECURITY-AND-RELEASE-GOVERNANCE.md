@@ -10,7 +10,7 @@ It translates ADR-001/ADR-002 into review, access, logging, and release controls
 | Contributor | Propose implementation, prompt, skill, schema, test, and documentation changes | Push feature branches and open pull requests | Cannot bypass required checks, approve their own protected change, create production tags, or access package credentials |
 | Maintainer | Preserve architecture and catalog integrity | Review and merge approved pull requests; maintain schemas, runtime, catalog, and CI | No direct push to `main`; cannot bypass contract or governance gates |
 | Security reviewer | Review sandbox, redaction, logging, secrets, permissions, and supply-chain changes | Approve security-sensitive pull requests and incident remediations | Does not receive package publishing credentials solely by holding this role |
-| Release manager | Verify the release checklist, choose the SemVer impact, create protected tags, and promote validated artifacts | Run governed pack/publish workflows through the protected release environment | Cannot publish an unreviewed commit or bypass an unsuccessful gate |
+| Release manager | Verify the release checklist and approve promotion of validated artifacts | Run the governed publish workflow through the protected release environment | Cannot supply or override a calculated version, publish an unreviewed commit, or bypass an unsuccessful gate |
 
 Organization administrators map these roles to GitHub teams. Membership is reviewed
 quarterly and removed immediately when no longer required. Repository administration,
@@ -28,8 +28,8 @@ Configure `main` with all of the following controls:
 - require `validate-prompts / prompt-contract` and
   `release-governance / semver-and-immutability` checks;
 - require exactly one `semver:patch`, `semver:minor`, or `semver:major` label;
-- restrict tag creation matching `v*` and the production package environment to
-  release managers;
+- restrict the production package environment to release managers and tag creation
+  matching `v*` to the governed publish workflow identity;
 - use least-privilege workflow permissions and environment-scoped package credentials.
 
 The role names are stable policy identifiers. Team names and membership are managed at
@@ -70,9 +70,12 @@ request with its base ref and computes the minimum impact:
 | Removal of a pin-able artifact or runtime source file | MAJOR |
 | Modification of an existing versioned prompt, skill, Markdown part, or output schema | Forbidden; create a new version |
 
-A higher declared impact is allowed. During package creation, the command additionally checks
-that `previous-version -> package-version` exactly matches the declared impact. Versions use
-the `X.Y.Z` form.
+A higher declared impact is allowed during pull-request review. During package creation,
+`publish-packages.yml` calculates the minimum impact since the latest reachable `vX.Y.Z`
+tag, derives the exact next version, and asks the command to validate that transition. The
+first release uses `version.json`; subsequent releases cannot accept manual version inputs.
+The workflow starts for every reviewed commit pushed to `main`; manual dispatch is retained
+only for idempotent recovery of an interrupted run. Release concurrency is serialized.
 
 Local example:
 
@@ -104,8 +107,10 @@ dotnet run --project tools/DevComputaria.Prompts.Cli -- \
 
 ### Package creation and promotion
 
-- [ ] Release manager identifies the previous protected tag and package version.
-- [ ] Proposed `X.Y.Z` package version exactly matches the declared impact.
+- [ ] The release runs from the latest reviewed commit on `main`.
+- [ ] The automatic `push` run, or a manual recovery of that same commit, is used.
+- [ ] The workflow identifies the previous protected tag and calculates the exact
+  next `X.Y.Z` version from the required impact.
 - [ ] Changelog documents additions, breaking changes, and removed pins.
 - [ ] Governed pack workflow succeeds for the exact reviewed commit SHA.
 - [ ] The governed workflow uploads the `.nupkg` as an audit artifact and publishes
@@ -114,7 +119,8 @@ dotnet run --project tools/DevComputaria.Prompts.Cli -- \
 - [ ] Publishing occurs only through the protected `production` environment.
 - [ ] Publication uses the workflow-scoped `GITHUB_TOKEN` with `packages: write`;
   credentials are short-lived and absent from logs/artifacts.
-- [ ] Protected `vX.Y.Z` tag points to the packaged commit.
+- [ ] The workflow creates the protected `vX.Y.Z` tag only after both registry
+  publications succeed.
 
 ### After release
 
@@ -130,6 +136,6 @@ dotnet run --project tools/DevComputaria.Prompts.Cli -- \
 - SemVer and immutability: `ReleaseGovernanceValidatorTests`.
 - Pull-request enforcement: `.github/workflows/release-governance.yml`.
 - Contract enforcement: `.github/workflows/validate-prompts.yml`.
-- Package version enforcement and GitHub Packages publication: `pack-promptkit.yml`
-  and `pack-prompts.yml`.
+- Automatic version planning and release orchestration: `publish-packages.yml`.
+- GitHub Packages publication: `pack-promptkit.yml` and `pack-prompts.yml`.
 
