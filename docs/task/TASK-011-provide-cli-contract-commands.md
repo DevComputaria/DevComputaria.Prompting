@@ -1,6 +1,6 @@
 # GH-011 — Provide CLI contract commands
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-2
 - **Phase:** F3
 - **Source:** PRD 10.11, ADR-003 section 9
@@ -26,6 +26,6 @@ Disponibilizar comandos locais para validação de contrato antes de PR.
 
 ## Acceptance criteria
 
-- [ ] `validate` retorna 0/1 corretamente.
-- [ ] `render` cobre fixture base.
-- [ ] Mensagens de erro são diagnósticas.
+- [x] `validate` retorna 0/1 corretamente.
+- [x] `render` cobre fixture base.
+- [x] Mensagens de erro são diagnósticas.
