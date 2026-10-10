@@ -2,13 +2,76 @@ name: pack-promptkit
 
 on:
   workflow_dispatch:
+    inputs:
+      base-ref:
+        description: Previous release tag or Git ref
+        required: true
+      previous-version:
+        description: Previously published package version (X.Y.Z)
+        required: true
+      package-version:
+        description: Package version to create (X.Y.Z)
+        required: true
+      semver-impact:
+        description: Declared release impact
+        required: true
+        type: choice
+        options: [patch, minor, major]
+
+permissions:
+  contents: read
 
 jobs:
+  contract-gate:
+    name: validate prompt contract
+    uses: ./.github/workflows/validate-prompts.yml
+
   pack:
+    name: pack PromptKit
+    needs: contract-gate
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          dotnet-version: 8.0.x
-      - run: dotnet pack src/DevComputaria.PromptKit/DevComputaria.PromptKit.csproj -c Release
+          fetch-depth: 0
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: |
+            Directory.Packages.props
+            src/DevComputaria.PromptKit/DevComputaria.PromptKit.csproj
+            tools/DevComputaria.Prompts.Cli/DevComputaria.Prompts.Cli.csproj
+
+      - name: Restore package dependencies
+        run: dotnet restore tools/DevComputaria.Prompts.Cli/DevComputaria.Prompts.Cli.csproj
+
+      - name: Validate release version and impact
+        run: >-
+          dotnet run --project tools/DevComputaria.Prompts.Cli
+          --configuration Release --no-restore --
+          release-check --base "${{ inputs['base-ref'] }}"
+          --impact "${{ inputs['semver-impact'] }}"
+          --previous-version "${{ inputs['previous-version'] }}"
+          --next-version "${{ inputs['package-version'] }}"
+
+      - name: Pack validated runtime
+        run: >-
+          dotnet pack src/DevComputaria.PromptKit/DevComputaria.PromptKit.csproj
+          --configuration Release --no-restore --output artifacts
+          -p:PackageVersion="${{ inputs['package-version'] }}"
+
+      - name: Publish package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DevComputaria.PromptKit-${{ inputs['package-version'] }}-${{ github.sha }}
+          path: artifacts/*.nupkg
+          if-no-files-found: error
+          retention-days: 14

@@ -1,6 +1,7 @@
 using DevComputaria.PromptKit.Abstractions;
 using DevComputaria.PromptKit.Catalogs;
 using DevComputaria.PromptKit.Hosting;
+using DevComputaria.PromptKit.Observability;
 using DevComputaria.Prompts.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,6 +28,7 @@ public sealed class ServiceRegistrationTests
         Assert.NotNull(provider.GetRequiredService<IPromptComposer>());
         Assert.NotNull(provider.GetRequiredService<IPromptSanitizer>());
         Assert.NotNull(provider.GetRequiredService<IPromptRenderer>());
+        Assert.NotNull(provider.GetRequiredService<PromptLogRedactor>());
 
         var renderer = provider.GetRequiredService<IPromptRenderer>();
         var rendered = await renderer.RenderAsync(prompt.Id, new PromptArgs(new Dictionary<string, object?>

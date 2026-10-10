@@ -29,8 +29,21 @@ Também é possível fornecer um objeto JSON com `--args caminho/args.json`.
 Opções `--arg key=value` podem ser repetidas e sobrescrevem valores do arquivo.
 O resultado de `render` é JSON com mensagens, hash e metadados.
 
+Para validar o impacto SemVer e a imutabilidade antes do PR:
+
+```bash
+dotnet run --project tools/DevComputaria.Prompts.Cli -- release-check \
+  --base origin/main \
+  --impact minor
+```
+
+Durante um release, informe também `--previous-version X.Y.Z` e
+`--next-version X.Y.Z`. O comando falha quando o impacto declarado é menor que
+o diff exige, quando a transição concreta não corresponde ao impacto ou quando
+um artefato versionado foi alterado no mesmo path.
+
 ## Exit codes
 
 - `0`: comando concluído com sucesso;
-- `1`: erro de uso, validação ou renderização. O diagnóstico é escrito em
+- `1`: erro de uso, validação, governança ou renderização. O diagnóstico é escrito em
   `stderr`.

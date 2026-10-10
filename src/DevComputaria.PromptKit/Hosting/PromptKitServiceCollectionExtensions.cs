@@ -1,6 +1,7 @@
 using DevComputaria.PromptKit.Abstractions;
 using DevComputaria.PromptKit.Composition;
 using DevComputaria.PromptKit.Hashing;
+using DevComputaria.PromptKit.Observability;
 using DevComputaria.PromptKit.Rendering;
 using DevComputaria.PromptKit.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public static class PromptKitServiceCollectionExtensions
 
         services.TryAddSingleton<IOptions<PromptKitOptions>>(_ => Options.Create(options));
         services.TryAddSingleton<PromptHasher>();
+        services.TryAddSingleton<PromptLogRedactor>();
         services.TryAddSingleton<TemplateSandbox>();
         services.TryAddSingleton<IPromptComposer, PassthroughPromptComposer>();
         services.TryAddSingleton<IPromptSanitizer, VariableValidator>();

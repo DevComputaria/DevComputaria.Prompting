@@ -207,6 +207,7 @@ DevComputaria.Prompting/
 └── .github/
 	└── workflows/
 		├── validate-prompts.yml
+		├── release-governance.yml
 		├── pack-promptkit.yml
 		└── pack-prompts.yml
 ```
@@ -226,7 +227,9 @@ Isso implica:
 - testes de empacotamento em `DevComputaria.Prompts.Tests`;
 - testes de contrato em `DevComputaria.Prompts.Contract.Tests`;
 - validação de consistência de `catalog.yaml`;
-- observabilidade via `prompt.id`, `prompt.version` e `prompt.sha256`.
+- observabilidade via `prompt.id`, `prompt.version` e `prompt.sha256`;
+- redaction explícita de argumentos sensíveis antes de qualquer logging;
+- governança verificável de SemVer, imutabilidade e criação de pacotes.
 
 Os testes de contrato são parte da governança de publish: se o contrato quebra, o pacote não deveria seguir adiante.
 
@@ -249,6 +252,8 @@ Os testes de contrato são parte da governança de publish: se o contrato quebra
 ### Histórico
 
 - `CHANGELOG.md`
+- `SECURITY.md`
+- `docs/SECURITY-AND-RELEASE-GOVERNANCE.md`
 
 ## Resumo
 
