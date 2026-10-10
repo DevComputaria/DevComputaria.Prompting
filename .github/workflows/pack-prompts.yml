@@ -1,35 +1,31 @@
 name: pack-prompts
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       base-ref:
-        description: Previous release tag or Git ref
         required: true
+        type: string
       previous-version:
-        description: Previously published package version (X.Y.Z)
-        required: true
+        required: false
+        type: string
       package-version:
-        description: Package version to create (X.Y.Z)
         required: true
+        type: string
       semver-impact:
-        description: Declared release impact
         required: true
-        type: choice
-        options: [patch, minor, major]
+        type: string
+      create-tag:
+        required: true
+        type: boolean
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
-  contract-gate:
-    name: validate prompt contract
-    uses: ./.github/workflows/validate-prompts.yml
-
   pack:
     name: pack prompts
-    needs: contract-gate
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 15
@@ -56,6 +52,7 @@ jobs:
         run: dotnet restore tools/DevComputaria.Prompts.Cli/DevComputaria.Prompts.Cli.csproj
 
       - name: Validate release version and impact
+        if: inputs['previous-version'] != ''
         run: >-
           dotnet run --project tools/DevComputaria.Prompts.Cli
           --configuration Release --no-restore --
@@ -63,6 +60,14 @@ jobs:
           --impact "${{ inputs['semver-impact'] }}"
           --previous-version "${{ inputs['previous-version'] }}"
           --next-version "${{ inputs['package-version'] }}"
+
+      - name: Validate initial release impact
+        if: inputs['previous-version'] == ''
+        run: >-
+          dotnet run --project tools/DevComputaria.Prompts.Cli
+          --configuration Release --no-restore --
+          release-check --base "${{ inputs['base-ref'] }}"
+          --impact "${{ inputs['semver-impact'] }}"
 
       - name: Pack validated catalog
         run: >-
@@ -90,3 +95,13 @@ jobs:
           --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
           --api-key "$NUGET_AUTH_TOKEN"
           --skip-duplicate
+
+      - name: Tag published commit
+        if: inputs['create-tag']
+        env:
+          PACKAGE_VERSION: ${{ inputs['package-version'] }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag --annotate "v$PACKAGE_VERSION" --message "Release v$PACKAGE_VERSION"
+          git push origin "v$PACKAGE_VERSION"

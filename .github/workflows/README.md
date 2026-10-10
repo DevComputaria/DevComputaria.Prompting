@@ -40,18 +40,21 @@ against the base branch to calculate the minimum impact and reject in-place
 changes to published artifacts. Configure branch protection to require
 `release-governance / semver-and-immutability`.
 
-Manual release runs provide a previous Git ref, previous package version, next
-package version, and declared impact. The pack workflows reject a version
-transition that does not exactly match that declaration.
+`publish-packages.yml` has no version inputs. It runs only from `main`, finds the
+latest reachable `vX.Y.Z` tag, calculates the required impact from the repository
+diff, derives the next version, and validates that transition. The first release
+uses the normalized version from `version.json`; rerunning an already tagged
+commit reuses its version to safely complete an interrupted publication.
 
 ## Package artifacts
 
-`pack-promptkit.yml` and `pack-prompts.yml` can only execute their packaging jobs
-after the reusable prompt contract gate succeeds, including all four test
-projects. A successful run uploads the generated `.nupkg` as a workflow artifact
-tied to the commit SHA and publishes that same file to the repository owner's
-GitHub Packages NuGet registry. A failed test or contract check therefore creates
-neither a releasable artifact nor a registry version.
+`publish-packages.yml` calls `pack-promptkit.yml` and `pack-prompts.yml` as internal
+reusable workflows only after the prompt contract gate succeeds, including all
+four test projects. PromptKit is published first because Prompts depends on the
+same package version. A successful run uploads both `.nupkg` files as workflow
+artifacts, publishes those files to the repository owner's GitHub Packages NuGet
+registry, and creates the corresponding annotated tag. A failed test or contract
+check therefore creates neither a releasable artifact nor a registry version.
 
 Registry publication runs through the `production` environment with the
 workflow-scoped `GITHUB_TOKEN` and the least-privilege `packages: write`
