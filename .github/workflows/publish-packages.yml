@@ -1,7 +1,14 @@
 name: publish-packages
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
+
+concurrency:
+  group: publish-packages
+  cancel-in-progress: false
 
 permissions:
   contents: write

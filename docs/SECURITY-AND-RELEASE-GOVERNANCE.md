@@ -74,6 +74,8 @@ A higher declared impact is allowed during pull-request review. During package c
 `publish-packages.yml` calculates the minimum impact since the latest reachable `vX.Y.Z`
 tag, derives the exact next version, and asks the command to validate that transition. The
 first release uses `version.json`; subsequent releases cannot accept manual version inputs.
+The workflow starts for every reviewed commit pushed to `main`; manual dispatch is retained
+only for idempotent recovery of an interrupted run. Release concurrency is serialized.
 
 Local example:
 
@@ -106,6 +108,7 @@ dotnet run --project tools/DevComputaria.Prompts.Cli -- \
 ### Package creation and promotion
 
 - [ ] The release runs from the latest reviewed commit on `main`.
+- [ ] The automatic `push` run, or a manual recovery of that same commit, is used.
 - [ ] The workflow identifies the previous protected tag and calculates the exact
   next `X.Y.Z` version from the required impact.
 - [ ] Changelog documents additions, breaking changes, and removed pins.

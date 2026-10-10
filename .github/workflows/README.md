@@ -40,11 +40,15 @@ against the base branch to calculate the minimum impact and reject in-place
 changes to published artifacts. Configure branch protection to require
 `release-governance / semver-and-immutability`.
 
-`publish-packages.yml` has no version inputs. It runs only from `main`, finds the
-latest reachable `vX.Y.Z` tag, calculates the required impact from the repository
-diff, derives the next version, and validates that transition. The first release
-uses the normalized version from `version.json`; rerunning an already tagged
-commit reuses its version to safely complete an interrupted publication.
+`publish-packages.yml` has no version inputs. It starts automatically on every
+push to `main`; manual dispatch remains available only to retry an interrupted
+release. It finds the latest reachable `vX.Y.Z` tag, calculates the required
+impact from the repository diff, derives the next version, and validates that
+transition. The first release uses the normalized version from `version.json`;
+rerunning an already tagged commit reuses its version safely.
+
+Release runs are serialized with `cancel-in-progress: false`, so a later commit
+cannot cancel or race an in-flight package publication.
 
 ## Package artifacts
 

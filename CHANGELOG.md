@@ -27,7 +27,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - Security reporting policy and pull-request security/SemVer checklist.
 - Unit-test and contract validation on pull requests and pushes to `main`, reused as a mandatory gate before package creation.
 - Governed publication of validated PromptKit and Prompts packages to the GitHub Packages NuGet registry.
-- Input-free `publish-packages` workflow that derives SemVer from the latest reviewed commit and release tag.
+- Input-free `publish-packages` workflow that runs automatically on `main`, derives SemVer from the latest reviewed commit and release tag, and serializes publications.
 
 ## [2026-08-30]
 
