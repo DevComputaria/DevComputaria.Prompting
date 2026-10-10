@@ -1,0 +1,24 @@
+{
+  "promptId": "promptologia.commit-messages",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "add-cache",
+      "category": "happy-path",
+      "args": { "change_description": "Adiciona cache de leitura para reduzir chamadas ao banco." },
+      "renderMustContain": ["Adiciona cache de leitura"],
+      "candidateOutput": "Formal: feat(cache): adiciona cache de leitura\nCasual: melhora leituras com cache\nSexta às 17h: perf: menos viagens ao banco antes do fim de semana",
+      "outputMustContain": ["Formal:", "Casual:", "Sexta às 17h:", "feat(cache):"],
+      "outputMustNotContain": ["quarta opção"]
+    },
+    {
+      "id": "breaking-api-change",
+      "category": "boundary",
+      "args": { "change_description": "Remove o endpoint legado v1 e altera o contrato público." },
+      "renderMustContain": ["Remove o endpoint legado"],
+      "candidateOutput": "Formal: feat(api)!: remove endpoint legado v1\nCasual: remove a API v1 que já cumpriu sua missão\nSexta às 17h: breaking: adeus v1, foi bom enquanto durou",
+      "outputMustContain": ["Formal:", "Casual:", "Sexta às 17h:", "!"],
+      "outputMustNotContain": ["fix:"]
+    }
+  ]
+}

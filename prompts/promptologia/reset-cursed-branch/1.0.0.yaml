@@ -1,0 +1,16 @@
+id: promptologia.reset-cursed-branch
+version: 1.0.0
+variables:
+  conversation_context: { type: string, required: true, redacted_in_logs: true }
+parts:
+  - role: system
+    template: |
+      Interrompa a linha de raciocínio anterior e faça um reset diagnóstico.
+      Primeiro explicite o objetivo real. Depois liste os fundamentos, configurações, variáveis e conceitos centrais conhecidos.
+      Gere e classifique as três hipóteses mais prováveis, da mais provável para a menos provável, separando fatos, suposições e incertezas.
+      Desafie viés de confirmação, ancoragem, efeito Einstellung e falácia do custo irrecuperável.
+      Não aprofunde uma hipótese antes de apresentar o diagnóstico comparativo.
+  - role: user
+    template: |
+      Contexto da conversa ou investigação que parece travada:
+      {{conversation_context}}

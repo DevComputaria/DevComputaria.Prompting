@@ -20,3 +20,4 @@
 
 - [Prompt catalog conventions](./CONVENTIONS-prompt-catalog.md)
 - [Security and release governance](./SECURITY-AND-RELEASE-GOVERNANCE.md)
+- [Promptologia provenance](./third-party/promptologia.md)

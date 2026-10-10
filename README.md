@@ -227,12 +227,22 @@ Isso implica:
 - testes de runtime em `DevComputaria.PromptKit.Tests`;
 - testes de empacotamento em `DevComputaria.Prompts.Tests`;
 - testes de contrato em `DevComputaria.Prompts.Contract.Tests`;
+- evals locais e testes de propriedade FsCheck em `DevComputaria.Prompts.Eval.Tests`;
 - validação de consistência de `catalog.yaml`;
 - observabilidade via `prompt.id`, `prompt.version` e `prompt.sha256`;
 - redaction explícita de argumentos sensíveis antes de qualquer logging;
 - governança verificável de SemVer, imutabilidade e criação de pacotes.
 
 Os testes de contrato são parte da governança de publish: se o contrato quebra, o pacote não deveria seguir adiante.
+
+Os prompts adaptados do Promptologia possuem dois casos locais por versão: um
+fluxo principal e um limite de segurança/robustez. As respostas candidatas são
+fixtures determinísticas e auditáveis; não há chamada a provider durante o teste.
+Para validar apenas essa suíte:
+
+```bash
+dotnet test tests/DevComputaria.Prompts.Eval.Tests/DevComputaria.Prompts.Eval.Tests.csproj
+```
 
 ## Documentação
 

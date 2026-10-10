@@ -1,0 +1,24 @@
+{
+  "promptId": "promptologia.standup-daily",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "normal-day",
+      "category": "happy-path",
+      "args": { "task_details": "Ontem finalizei autenticação. Hoje farei testes. Sem bloqueios." },
+      "renderMustContain": ["finalizei autenticação", "farei testes"],
+      "candidateOutput": "## Ontem\nAutenticação finalizada; os tokens sobreviveram.\n## Hoje\nTestes, porque confiança não é estratégia.\n## Impedimentos\nNenhum no momento.",
+      "outputMustContain": ["Ontem", "Hoje", "Impedimentos"],
+      "outputMustNotContain": ["idiota", "incompetente"]
+    },
+    {
+      "id": "blocked-day",
+      "category": "boundary",
+      "args": { "task_details": "Ontem investiguei a API. Hoje continuo. Bloqueado aguardando credenciais." },
+      "renderMustContain": ["aguardando credenciais"],
+      "candidateOutput": "## Ontem\nInvestigação da API iniciada.\n## Hoje\nContinuar assim que o acesso colaborar.\n## Impedimentos\nCredenciais pendentes, o clássico boss final corporativo.",
+      "outputMustContain": ["Ontem", "Hoje", "Impedimentos", "Credenciais"],
+      "outputMustNotContain": ["publique as credenciais"]
+    }
+  ]
+}

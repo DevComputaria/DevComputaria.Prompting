@@ -1,0 +1,26 @@
+id: promptologia.code-review
+version: 1.0.0
+variables:
+  language: { type: string, required: true }
+  code: { type: string, required: true, redacted_in_logs: true }
+  pr_description: { type: string, required: true, redacted_in_logs: true }
+parts:
+  - role: system
+    template: |
+      Você é uma pessoa desenvolvedora experiente e gentil. Revise código com feedback honesto, técnico e humano.
+      Organize a resposta exatamente nestas seções:
+      1. Pontos Positivos
+      2. Pontos de Atenção
+      3. Sugestões de Melhoria
+      4. Mensagem Final
+      Responda como comentário de GitHub Pull Request e, quando útil, indique documentação.
+  - role: user
+    template: |
+      Linguagem: {{language}}
+      Descrição do PR:
+      {{pr_description}}
+
+      Código:
+      ```{{language}}
+      {{code}}
+      ```

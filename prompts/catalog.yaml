@@ -2,10 +2,50 @@ package: DevComputaria.Prompts
 schema: 1
 aliases:
   image-analysis.analyze-document: 1.1.0
+  promptologia.code-review: 1.0.0
+  promptologia.commit-messages: 1.0.0
+  promptologia.csharp-dto-validation: 1.0.0
+  promptologia.csharp-unittest-controller: 1.0.0
+  promptologia.csharp-webapi-crud: 1.0.0
+  promptologia.reset-cursed-branch: 1.0.0
+  promptologia.gpt-therapist: 1.0.0
+  promptologia.standup-daily: 1.0.0
+  promptologia.observability-incident: 1.0.0
+  promptologia.n8n-workflow: 1.0.0
 prompts:
   - id: image-analysis.analyze-document
     versions: [1.0.0, 1.1.0]
     tags: [image-analysis]
+  - id: promptologia.code-review
+    versions: [1.0.0]
+    tags: [promptologia, development, review]
+  - id: promptologia.commit-messages
+    versions: [1.0.0]
+    tags: [promptologia, development, git]
+  - id: promptologia.csharp-dto-validation
+    versions: [1.0.0]
+    tags: [promptologia, development, csharp]
+  - id: promptologia.csharp-unittest-controller
+    versions: [1.0.0]
+    tags: [promptologia, development, csharp, testing]
+  - id: promptologia.csharp-webapi-crud
+    versions: [1.0.0]
+    tags: [promptologia, development, csharp, webapi]
+  - id: promptologia.reset-cursed-branch
+    versions: [1.0.0]
+    tags: [promptologia, reasoning]
+  - id: promptologia.gpt-therapist
+    versions: [1.0.0]
+    tags: [promptologia, creative]
+  - id: promptologia.standup-daily
+    versions: [1.0.0]
+    tags: [promptologia, creative, teamwork]
+  - id: promptologia.observability-incident
+    versions: [1.0.0]
+    tags: [promptologia, observability, kubernetes]
+  - id: promptologia.n8n-workflow
+    versions: [1.0.0]
+    tags: [promptologia, automation, n8n]
 skills:
   - id: image-analysis.document-extractor
     versions: [1.0.0]

@@ -1,0 +1,30 @@
+{
+  "promptId": "promptologia.csharp-dto-validation",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "product-dto",
+      "category": "happy-path",
+      "args": {
+        "dto_name": "ProductDto",
+        "properties_and_validations": "Name:string:Required,StringLength(100); Price:decimal:Range(0.01,9999.99)"
+      },
+      "renderMustContain": ["ProductDto", "StringLength(100)", "Range(0.01,9999.99)"],
+      "candidateOutput": "using System.ComponentModel.DataAnnotations;\npublic class ProductDto\n{\n    [Required, StringLength(100)] public string Name { get; set; } = string.Empty;\n    [Range(0.01, 9999.99)] public decimal Price { get; set; }\n}",
+      "outputMustContain": ["using System.ComponentModel.DataAnnotations", "public class ProductDto", "[Required", "[Range("],
+      "outputMustNotContain": ["```"]
+    },
+    {
+      "id": "nullable-expiration",
+      "category": "boundary",
+      "args": {
+        "dto_name": "CouponDto",
+        "properties_and_validations": "Code:string:Required; ExpiresAt:DateTime?:"
+      },
+      "renderMustContain": ["CouponDto", "DateTime?"],
+      "candidateOutput": "using System;\nusing System.ComponentModel.DataAnnotations;\npublic class CouponDto\n{\n    [Required] public string Code { get; set; } = string.Empty;\n    public DateTime? ExpiresAt { get; set; }\n}",
+      "outputMustContain": ["public class CouponDto", "DateTime? ExpiresAt"],
+      "outputMustNotContain": ["[Required] public DateTime?"]
+    }
+  ]
+}

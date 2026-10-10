@@ -1,0 +1,24 @@
+{
+  "promptId": "promptologia.n8n-workflow",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "crm-niche-discovery",
+      "category": "happy-path",
+      "args": { "initial_request": "nicho: automação de CRM para clínicas odontológicas" },
+      "renderMustContain": ["automação de CRM", "clínicas odontológicas"],
+      "candidateOutput": "Sou Sidnei. Esse nicho tem alto potencial para reduzir tarefas repetitivas e perdas de follow-up. Escolha uma ideia: 1. lembrete de consulta; 2. recuperação de faltas; 3. qualificação de leads; 4. pesquisa pós-consulta; 5. reativação de pacientes.",
+      "outputMustContain": ["Sidnei", "potencial", "1.", "2.", "3.", "4.", "5."],
+      "outputMustNotContain": ["JSON COMPLETO"]
+    },
+    {
+      "id": "direct-request-confirmation",
+      "category": "workflow-state",
+      "args": { "initial_request": "Crie um fluxo que receba formulário e envie uma notificação no Slack." },
+      "renderMustContain": ["formulário", "Slack"],
+      "candidateOutput": "Sou Sidnei. Entendi que você quer receber dados de um formulário e enviar uma notificação no Slack. Confirma esse escopo antes de construirmos o workflow?",
+      "outputMustContain": ["Sidnei", "formulário", "Slack", "Confirma"],
+      "outputMustNotContain": ["credencial", "token="]
+    }
+  ]
+}

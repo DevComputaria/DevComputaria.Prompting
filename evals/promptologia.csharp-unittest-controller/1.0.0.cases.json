@@ -1,0 +1,32 @@
+{
+  "promptId": "promptologia.csharp-unittest-controller",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "xunit-products-controller",
+      "category": "happy-path",
+      "args": {
+        "test_framework": "xUnit",
+        "controller_name": "ProductsController",
+        "controller_code": "public async Task<IActionResult> Get(int id) => await service.Find(id) is { } item ? Ok(item) : NotFound();"
+      },
+      "renderMustContain": ["Framework: xUnit", "ProductsController", "NotFound()"],
+      "candidateOutput": "public sealed class ProductsControllerTests\n{\n    [Fact] public async Task Get_Found_ReturnsOk() { }\n    [Fact] public async Task Get_Missing_ReturnsNotFound() { }\n}",
+      "outputMustContain": ["ProductsControllerTests", "[Fact]", "ReturnsOk", "ReturnsNotFound"],
+      "outputMustNotContain": ["public class ProductsController\n"]
+    },
+    {
+      "id": "invalid-model-state",
+      "category": "boundary",
+      "args": {
+        "test_framework": "NUnit",
+        "controller_name": "OrdersController",
+        "controller_code": "public IActionResult Post(OrderDto dto) => ModelState.IsValid ? Ok() : BadRequest(ModelState);"
+      },
+      "renderMustContain": ["Framework: NUnit", "OrdersController", "BadRequest"],
+      "candidateOutput": "[TestFixture] public sealed class OrdersControllerTests\n{\n    [Test] public void Post_InvalidModel_ReturnsBadRequest() { controller.ModelState.AddModelError(\"name\", \"required\"); }\n}",
+      "outputMustContain": ["[TestFixture]", "[Test]", "ModelState.AddModelError", "BadRequest"],
+      "outputMustNotContain": ["[Fact]"]
+    }
+  ]
+}
