@@ -84,6 +84,20 @@ public sealed class CliApplicationTests
         Assert.Contains("ocr_text", error.ToString(), StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task ReleaseCheck_Help_ShouldDescribeGovernanceContract()
+    {
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        var application = new CliApplication(output, error);
+
+        var exitCode = await application.RunAsync(["release-check", "--help"]);
+
+        Assert.Equal(0, exitCode);
+        Assert.Contains("--impact <patch|minor|major>", output.ToString(), StringComparison.Ordinal);
+        Assert.Equal(string.Empty, error.ToString());
+    }
+
     private static string RepositoryRoot { get; } = FindRepositoryRoot();
 
     private static string FindRepositoryRoot()

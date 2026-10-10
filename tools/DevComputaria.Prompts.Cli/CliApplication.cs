@@ -35,6 +35,7 @@ public sealed class CliApplication
             {
                 "validate" => await ValidateAsync(args[1..]),
                 "render" => await RenderAsync(args[1..], cancellationToken),
+                "release-check" => await ReleaseCheckAsync(args[1..]),
                 _ => await FailAsync($"Unknown command '{args[0]}'.{Environment.NewLine}{Usage}")
             };
         }
@@ -140,6 +141,67 @@ public sealed class CliApplication
         return 0;
     }
 
+    private async Task<int> ReleaseCheckAsync(string[] args)
+    {
+        if (args.Length == 0 || IsHelp(args[0]))
+        {
+            await _output.WriteLineAsync(ReleaseCheckUsage);
+            return args.Length == 0 ? 1 : 0;
+        }
+
+        string? root = null;
+        string? baseRef = null;
+        string? impactText = null;
+        string? previousVersion = null;
+        string? nextVersion = null;
+
+        for (var index = 0; index < args.Length; index++)
+        {
+            var option = args[index];
+            if (option == "--root" && index + 1 < args.Length) root = args[++index];
+            else if (option == "--base" && index + 1 < args.Length) baseRef = args[++index];
+            else if (option == "--impact" && index + 1 < args.Length) impactText = args[++index];
+            else if (option == "--previous-version" && index + 1 < args.Length) previousVersion = args[++index];
+            else if (option == "--next-version" && index + 1 < args.Length) nextVersion = args[++index];
+            else throw new ArgumentException($"Unknown or incomplete option '{option}'.");
+        }
+
+        if (string.IsNullOrWhiteSpace(baseRef) || string.IsNullOrWhiteSpace(impactText))
+        {
+            return await FailAsync("Both --base and --impact are required.");
+        }
+
+        if ((previousVersion is null) != (nextVersion is null))
+        {
+            return await FailAsync("--previous-version and --next-version must be supplied together.");
+        }
+
+        var repositoryRoot = RepositoryPaths.Resolve(root);
+        var (changes, baseArtifactPaths) = new GitRepositoryInspector().Compare(repositoryRoot, baseRef);
+        var declaredImpact = ReleaseGovernanceValidator.ParseImpact(impactText);
+        var result = new ReleaseGovernanceValidator().Validate(
+            changes,
+            baseArtifactPaths,
+            declaredImpact,
+            previousVersion,
+            nextVersion);
+
+        await _output.WriteLineAsync($"Required SemVer impact: {result.RequiredImpact.ToString().ToUpperInvariant()}");
+        if (!result.IsValid)
+        {
+            await _error.WriteLineAsync($"Release governance failed with {result.Issues.Count} error(s):");
+            foreach (var issue in result.Issues)
+            {
+                await _error.WriteLineAsync($"- {issue}");
+            }
+
+            return 1;
+        }
+
+        await _output.WriteLineAsync($"Release governance succeeded with declared {declaredImpact.ToString().ToUpperInvariant()} impact.");
+        return 0;
+    }
+
     private static IReadOnlyDictionary<string, object?> ReadArguments(string path)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(path));
@@ -212,6 +274,7 @@ public sealed class CliApplication
         Commands:
           validate [--root <repository>]  Validate schemas, manifest, aliases and includes.
           render <id>@<version> [--args <file.json>] [--arg key=value]
+          release-check --base <git-ref> --impact <patch|minor|major> [version options]
 
         Run '<command> --help' for command details.
         """;
@@ -228,5 +291,14 @@ public sealed class CliApplication
           validate [--root <repository>]
 
         Validates schemas, manifest/resources, aliases, identities, includes and output schemas.
+        """;
+
+    private const string ReleaseCheckUsage = """
+        Usage:
+          release-check --base <git-ref> --impact <patch|minor|major> [--root <repository>]
+                        [--previous-version <X.Y.Z> --next-version <X.Y.Z>]
+
+        Computes the minimum release impact from the Git diff, rejects in-place mutation of
+        published artifacts, and optionally verifies the concrete package version transition.
         """;
 }

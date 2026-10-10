@@ -20,10 +20,13 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - Explicitly versioned skills that attach system instructions and provider-neutral tools to `RenderedPrompt`.
 - Incremental `PromptPins` source generator backed by the versions published in `prompts/catalog.yaml`.
 - `image-analysis.analyze-document@1.1.0` and `image-analysis.document-extractor@1.0.0` packed artifacts.
-
-### Planned
-
-- GH-015 — Security, authorization and release governance.
+- Public `PromptLogRedactor` with conservative sensitive-variable masking and DI registration.
+- Security and release governance policy covering roles, access, logging, compliance, and rollback.
+- CLI `release-check` command for diff-based SemVer classification and artifact immutability enforcement.
+- Pull-request release-governance workflow and governed package-version inputs for pack workflows.
+- Security reporting policy and pull-request security/SemVer checklist.
+- Unit-test and contract validation on pull requests and pushes to `main`, reused as a mandatory gate before package creation.
+- Governed publication of validated PromptKit and Prompts packages to the GitHub Packages NuGet registry.
 
 ## [2026-08-30]
 
@@ -138,6 +141,9 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - The prompts packaging workflow now requires the reusable contract gate before producing a release artifact.
 - The prompt validation workflow now runs the end-to-end sample with Production directory-override suppression.
 - The end-to-end sample now consumes the generated v1.1 prompt pin and prints attached tools.
+- Prompt contract validation now runs the PromptKit security/runtime test suite.
+- PromptKit packaging now requires the reusable contract gate and emits a versioned workflow artifact.
+- Both package workflows verify the declared impact and concrete package version transition before packing.
 
 ### Verified
 
@@ -156,6 +162,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - GH-012 completed: pull-request validation and package artifact creation are blocked by the prompt contract gate.
 - GH-013 completed: the sample renders the pinned Image Analysis prompt and invokes a fake client without HTTP.
 - GH-014 completed: external Markdown parts, schema injection, versioned skill attachment, tools, and generated prompt pins are covered end to end.
+- GH-015 completed: authorization roles, log redaction, release checklist, and SemVer governance are documented and enforced by tests/workflows.
 - Full solution build succeeded in Release configuration with 0 errors and 0 warnings.
 - PromptKit test suite passed for core abstraction contracts.
 - PromptKit test suite passed expanded lookup/error coverage for the versioned catalog contract.
@@ -172,4 +179,4 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 
 - Production contract remains domain-agnostic and provider-agnostic in `DevComputaria.PromptKit`.
 - Current implementation intentionally avoids provider SDKs and HTTP dependencies.
-- The next execution target in sequence is `GH-014`.
+- GH-000 through GH-015 are complete in the task board.

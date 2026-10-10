@@ -2,6 +2,9 @@ name: validate-prompts
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
   workflow_call:
   workflow_dispatch:
 
@@ -41,6 +44,11 @@ jobs:
 
       - name: Validate repository contract with CLI
         run: dotnet run --project tools/DevComputaria.Prompts.Cli --configuration Release --no-build -- validate
+
+      - name: Test PromptKit security and runtime contracts
+        run: >-
+          dotnet test tests/DevComputaria.PromptKit.Tests/DevComputaria.PromptKit.Tests.csproj
+          --configuration Release --no-build --no-restore
 
       - name: Test manifest and packed-resource consistency
         run: >-

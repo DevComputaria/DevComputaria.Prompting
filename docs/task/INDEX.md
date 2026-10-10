@@ -35,7 +35,7 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 | GH-012 | Implement CI publish gates | PR-2 | F3 | GH-010, GH-011 | done | 2026-10-10 | [TASK-012](./TASK-012-implement-ci-publish-gates.md) | Gate reutilizável bloqueia pack em falha de contrato |
 | GH-013 | Deliver end-to-end sample | PR-2 | F4 | GH-007, GH-009 | done | 2026-10-10 | [TASK-013](./TASK-013-deliver-end-to-end-sample.md) | Render pinado e client fake sem HTTP |
 | GH-014 | Implement extension set v1.1 | PR-2 | F5 | GH-010, GH-013 | done | 2026-10-10 | [TASK-014](./TASK-014-implement-extension-set-v1-1.md) | `from`, schema injection, skills/tools e pins gerados |
-| GH-015 | Security, authorization and release governance | PR-2 | F3-F5 | GH-012 | todo | 2026-08-30 | [TASK-015](./TASK-015-security-authorization-release-governance.md) | Governança final |
+| GH-015 | Security, authorization and release governance | PR-2 | F3-F5 | GH-012 | done | 2026-10-10 | [TASK-015](./TASK-015-security-authorization-release-governance.md) | Papéis, redaction e gate SemVer verificável |
 
 ## Change log
 
@@ -56,3 +56,4 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 - 2026-10-10: Execução da `GH-012` concluída (gate de contrato reutilizável e pack condicionado ao sucesso da validação).
 - 2026-10-10: Execução da `GH-013` concluída (sample end-to-end com render pinado, metadados e client fake).
 - 2026-10-10: Execução da `GH-014` concluída (`parts[].from`, schema injection, skills/tools pinadas e `PromptPins` gerados).
+- 2026-10-10: Execução da `GH-015` concluída (papéis e autorização, redaction segura, checklist e gates SemVer/release).
