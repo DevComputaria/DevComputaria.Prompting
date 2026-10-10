@@ -32,7 +32,7 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 | GH-009 | Enforce manifest/resource consistency | PR-1 | F2 | GH-008 | done | 2026-08-30 | [TASK-009](./TASK-009-enforce-manifest-resource-consistency.md) | Integridade do pacote |
 | GH-010 | Validate schema and immutability gates | PR-2 | F3 | GH-009 | done | 2026-08-30 | [TASK-010](./TASK-010-validate-schema-and-immutability-gates.md) | Gate de contrato |
 | GH-011 | Provide CLI contract commands | PR-2 | F3 | GH-010 | done | 2026-10-10 | [TASK-011](./TASK-011-provide-cli-contract-commands.md) | CLI validate/render com exit codes e diagnósticos |
-| GH-012 | Implement CI publish gates | PR-2 | F3 | GH-010, GH-011 | todo | 2026-08-30 | [TASK-012](./TASK-012-implement-ci-publish-gates.md) | Bloqueio de publish |
+| GH-012 | Implement CI publish gates | PR-2 | F3 | GH-010, GH-011 | done | 2026-10-10 | [TASK-012](./TASK-012-implement-ci-publish-gates.md) | Gate reutilizável bloqueia pack em falha de contrato |
 | GH-013 | Deliver end-to-end sample | PR-2 | F4 | GH-007, GH-009 | todo | 2026-08-30 | [TASK-013](./TASK-013-deliver-end-to-end-sample.md) | Prova de integração |
 | GH-014 | Implement extension set v1.1 | PR-2 | F5 | GH-010, GH-013 | todo | 2026-08-30 | [TASK-014](./TASK-014-implement-extension-set-v1-1.md) | Evolução de contrato |
 | GH-015 | Security, authorization and release governance | PR-2 | F3-F5 | GH-012 | todo | 2026-08-30 | [TASK-015](./TASK-015-security-authorization-release-governance.md) | Governança final |
@@ -53,3 +53,4 @@ Este índice organiza as atividades do PRD (`GH-001`..`GH-015`) em tarefas execu
 - 2026-08-30: Execução da `GH-009` concluída (consistência entre manifesto, aliases e embedded resources validada por bateria de testes bloqueante).
 - 2026-08-30: Execução da `GH-010` concluída (gates de schema, imutabilidade e snapshot de render no projeto de contract tests).
 - 2026-10-10: Execução da `GH-011` concluída (`validate`/`render`, exit codes, diagnósticos e testes da CLI).
+- 2026-10-10: Execução da `GH-012` concluída (gate de contrato reutilizável e pack condicionado ao sucesso da validação).

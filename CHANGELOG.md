@@ -12,10 +12,11 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - Repository validation for prompt/catalog schemas, manifest resources, aliases, path identities, includes, and output schema references.
 - JSON render output with pinned prompt identity, rendered messages, content hash, package metadata, and renderer hints.
 - Dedicated CLI tests covering success/failure exit codes, diagnostic errors, and the base render fixture.
+- Reusable prompt contract workflow covering CLI validation, catalog consistency, schemas, immutability, and render fixtures.
+- Gated `DevComputaria.Prompts` package workflow that uploads a `.nupkg` artifact only after contract validation succeeds.
 
 ### Planned
 
-- GH-012 — Implement CI publish gates.
 - GH-013 — Deliver end-to-end sample.
 - GH-014 — Implement extension set v1.1.
 - GH-015 — Security, authorization and release governance.
@@ -130,6 +131,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - Packed catalog construction now validates alias, manifest, and embedded resource consistency before runtime use.
 - Contract gates now enforce schema validity, immutable published artifacts, and approved render snapshots in a dedicated test suite.
 - The task index and GH-011 task file now record the CLI contract commands as completed.
+- The prompts packaging workflow now requires the reusable contract gate before producing a release artifact.
 
 ### Verified
 
@@ -145,6 +147,7 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - GH-009 completed: manifest/resource consistency enforcement implemented with blocking tests for broken aliases, missing files, and orphan resources.
 - GH-010 completed: schema validation, immutability guards, and render snapshots implemented as mandatory contract gates.
 - GH-011 completed: CLI `validate`/`render` commands implemented with consistent exit codes and diagnostic output.
+- GH-012 completed: pull-request validation and package artifact creation are blocked by the prompt contract gate.
 - Full solution build succeeded in Release configuration with 0 errors and 0 warnings.
 - PromptKit test suite passed for core abstraction contracts.
 - PromptKit test suite passed expanded lookup/error coverage for the versioned catalog contract.
@@ -161,4 +164,4 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 
 - Production contract remains domain-agnostic and provider-agnostic in `DevComputaria.PromptKit`.
 - Current implementation intentionally avoids provider SDKs and HTTP dependencies.
-- The next execution target in sequence is `GH-012`.
+- The next execution target in sequence is `GH-013`.

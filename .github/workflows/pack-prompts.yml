@@ -3,12 +3,48 @@ name: pack-prompts
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
+  contract-gate:
+    name: validate prompt contract
+    uses: ./.github/workflows/validate-prompts.yml
+
   pack:
+    name: pack prompts
+    needs: contract-gate
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
-      - run: dotnet pack src/DevComputaria.Prompts/DevComputaria.Prompts.csproj -c Release
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: |
+            Directory.Packages.props
+            src/DevComputaria.PromptKit/DevComputaria.PromptKit.csproj
+            src/DevComputaria.Prompts/DevComputaria.Prompts.csproj
+
+      - name: Restore package dependencies
+        run: dotnet restore src/DevComputaria.Prompts/DevComputaria.Prompts.csproj
+
+      - name: Pack validated catalog
+        run: >-
+          dotnet pack src/DevComputaria.Prompts/DevComputaria.Prompts.csproj
+          --configuration Release --no-restore --output artifacts
+
+      - name: Publish package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DevComputaria.Prompts-${{ github.sha }}
+          path: artifacts/*.nupkg
+          if-no-files-found: error
+          retention-days: 14

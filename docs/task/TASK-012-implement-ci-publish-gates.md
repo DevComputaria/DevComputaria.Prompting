@@ -1,6 +1,6 @@
 # GH-012 — Implement CI publish gates
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-2
 - **Phase:** F3
 - **Source:** PRD 10.12, ADR-002 section 2.11
@@ -25,6 +25,6 @@ Automatizar bloqueios de merge/publish quando contrato de prompt falhar.
 
 ## Acceptance criteria
 
-- [ ] Pipeline quebra em erro de contrato.
-- [ ] Publicação depende de sucesso do gate.
-- [ ] Reexecução reproduzível em PR.
+- [x] Pipeline quebra em erro de contrato.
+- [x] Publicação depende de sucesso do gate.
+- [x] Reexecução reproduzível em PR.
