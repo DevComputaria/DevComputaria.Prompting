@@ -1,0 +1,157 @@
+name: publish-packages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  guard:
+    name: require main branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject non-main releases
+        env:
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          if [[ "$RELEASE_REF" != "refs/heads/main" ]]; then
+            echo "Packages can only be published from main; received '$RELEASE_REF'." >&2
+            exit 1
+          fi
+
+  contract-gate:
+    name: validate tests and prompt contract
+    needs: guard
+    uses: ./.github/workflows/validate-prompts.yml
+
+  release-plan:
+    name: calculate release version
+    needs: contract-gate
+    runs-on: ubuntu-latest
+    outputs:
+      base-ref: ${{ steps.plan.outputs.base-ref }}
+      previous-version: ${{ steps.plan.outputs.previous-version }}
+      package-version: ${{ steps.plan.outputs.package-version }}
+      semver-impact: ${{ steps.plan.outputs.semver-impact }}
+      create-tag: ${{ steps.plan.outputs.create-tag }}
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: true
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: |
+            Directory.Packages.props
+            tools/DevComputaria.Prompts.Cli/DevComputaria.Prompts.Cli.csproj
+
+      - name: Restore release tooling
+        run: dotnet restore tools/DevComputaria.Prompts.Cli/DevComputaria.Prompts.Cli.csproj
+
+      - name: Calculate version from repository history
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          current_tag="$(git tag --points-at HEAD --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-version:refname | head -n 1)"
+          latest_tag="$(git tag --merged HEAD^ --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-version:refname | head -n 1)"
+
+          if [[ -n "$latest_tag" ]]; then
+            base_ref="$latest_tag"
+            previous_version="${latest_tag#v}"
+          else
+            base_ref="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
+            previous_version=""
+          fi
+
+          governance_output="$(dotnet run --project tools/DevComputaria.Prompts.Cli \
+            --configuration Release --no-restore -- \
+            release-check --base "$base_ref" --impact major)"
+          printf '%s\n' "$governance_output"
+
+          impact="$(printf '%s\n' "$governance_output" \
+            | sed -n 's/^Required SemVer impact: //p' \
+            | tr '[:upper:]' '[:lower:]')"
+          if [[ ! "$impact" =~ ^(patch|minor|major)$ ]]; then
+            echo "Could not calculate a SemVer impact from release-check." >&2
+            exit 1
+          fi
+
+          if [[ -n "$current_tag" ]]; then
+            package_version="${current_tag#v}"
+            create_tag=false
+          elif [[ -z "$previous_version" ]]; then
+            package_version="$(jq -r '.version' version.json)"
+            if [[ "$package_version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+              package_version="${package_version}.0"
+            fi
+            create_tag=true
+          else
+            IFS=. read -r major minor patch <<< "$previous_version"
+            case "$impact" in
+              patch) package_version="$major.$minor.$((patch + 1))" ;;
+              minor) package_version="$major.$((minor + 1)).0" ;;
+              major) package_version="$((major + 1)).0.0" ;;
+            esac
+            create_tag=true
+          fi
+
+          if [[ ! "$package_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Calculated package version '$package_version' is not X.Y.Z." >&2
+            exit 1
+          fi
+
+          if [[ -n "$previous_version" ]]; then
+            dotnet run --project tools/DevComputaria.Prompts.Cli \
+              --configuration Release --no-restore -- \
+              release-check --base "$base_ref" --impact "$impact" \
+              --previous-version "$previous_version" \
+              --next-version "$package_version"
+          else
+            dotnet run --project tools/DevComputaria.Prompts.Cli \
+              --configuration Release --no-restore -- \
+              release-check --base "$base_ref" --impact "$impact"
+          fi
+
+          {
+            echo "base-ref=$base_ref"
+            echo "previous-version=$previous_version"
+            echo "package-version=$package_version"
+            echo "semver-impact=$impact"
+            echo "create-tag=$create_tag"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Release plan: ${current_tag:-new tag v$package_version}, base $base_ref, impact $impact."
+
+  publish-promptkit:
+    name: publish PromptKit
+    needs: release-plan
+    uses: ./.github/workflows/pack-promptkit.yml
+    with:
+      base-ref: ${{ needs.release-plan.outputs.base-ref }}
+      previous-version: ${{ needs.release-plan.outputs.previous-version }}
+      package-version: ${{ needs.release-plan.outputs.package-version }}
+      semver-impact: ${{ needs.release-plan.outputs.semver-impact }}
+
+  publish-prompts:
+    name: publish Prompts and finalize release
+    needs:
+      - release-plan
+      - publish-promptkit
+    uses: ./.github/workflows/pack-prompts.yml
+    with:
+      base-ref: ${{ needs.release-plan.outputs.base-ref }}
+      previous-version: ${{ needs.release-plan.outputs.previous-version }}
+      package-version: ${{ needs.release-plan.outputs.package-version }}
+      semver-impact: ${{ needs.release-plan.outputs.semver-impact }}
+      create-tag: ${{ needs.release-plan.outputs.create-tag == 'true' }}

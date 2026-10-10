@@ -23,10 +23,11 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 - Public `PromptLogRedactor` with conservative sensitive-variable masking and DI registration.
 - Security and release governance policy covering roles, access, logging, compliance, and rollback.
 - CLI `release-check` command for diff-based SemVer classification and artifact immutability enforcement.
-- Pull-request release-governance workflow and governed package-version inputs for pack workflows.
+- Pull-request release-governance workflow and automatic tag-based package version planning.
 - Security reporting policy and pull-request security/SemVer checklist.
 - Unit-test and contract validation on pull requests and pushes to `main`, reused as a mandatory gate before package creation.
 - Governed publication of validated PromptKit and Prompts packages to the GitHub Packages NuGet registry.
+- Input-free `publish-packages` workflow that derives SemVer from the latest reviewed commit and release tag.
 
 ## [2026-08-30]
 

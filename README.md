@@ -208,6 +208,7 @@ DevComputaria.Prompting/
 	└── workflows/
 		├── validate-prompts.yml
 		├── release-governance.yml
+		├── publish-packages.yml
 		├── pack-promptkit.yml
 		└── pack-prompts.yml
 ```

@@ -1,35 +1,28 @@
 name: pack-promptkit
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       base-ref:
-        description: Previous release tag or Git ref
         required: true
+        type: string
       previous-version:
-        description: Previously published package version (X.Y.Z)
-        required: true
+        required: false
+        type: string
       package-version:
-        description: Package version to create (X.Y.Z)
         required: true
+        type: string
       semver-impact:
-        description: Declared release impact
         required: true
-        type: choice
-        options: [patch, minor, major]
+        type: string
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  contract-gate:
-    name: validate prompt contract
-    uses: ./.github/workflows/validate-prompts.yml
-
   pack:
     name: pack PromptKit
-    needs: contract-gate
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 15
@@ -56,6 +49,7 @@ jobs:
         run: dotnet restore tools/DevComputaria.Prompts.Cli/DevComputaria.Prompts.Cli.csproj
 
       - name: Validate release version and impact
+        if: inputs['previous-version'] != ''
         run: >-
           dotnet run --project tools/DevComputaria.Prompts.Cli
           --configuration Release --no-restore --
@@ -63,6 +57,14 @@ jobs:
           --impact "${{ inputs['semver-impact'] }}"
           --previous-version "${{ inputs['previous-version'] }}"
           --next-version "${{ inputs['package-version'] }}"
+
+      - name: Validate initial release impact
+        if: inputs['previous-version'] == ''
+        run: >-
+          dotnet run --project tools/DevComputaria.Prompts.Cli
+          --configuration Release --no-restore --
+          release-check --base "${{ inputs['base-ref'] }}"
+          --impact "${{ inputs['semver-impact'] }}"
 
       - name: Pack validated runtime
         run: >-
