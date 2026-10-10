@@ -1,8 +1,11 @@
 package: DevComputaria.Prompts
 schema: 1
 aliases:
-  image-analysis.analyze-document: 1.0.0
+  image-analysis.analyze-document: 1.1.0
 prompts:
   - id: image-analysis.analyze-document
-    versions: [1.0.0]
+    versions: [1.0.0, 1.1.0]
     tags: [image-analysis]
+skills:
+  - id: image-analysis.document-extractor
+    versions: [1.0.0]

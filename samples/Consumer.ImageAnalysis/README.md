@@ -3,7 +3,7 @@
 Este projeto demonstra o fluxo ponta a ponta sem acessar um provider real:
 
 1. registra o runtime e o catálogo packed por DI;
-2. seleciona `image-analysis.analyze-document@1.0.0` com pin explícito;
+2. seleciona `image-analysis.analyze-document@1.1.0` pelo `PromptPins` gerado;
 3. renderiza mensagens, hash e metadados;
 4. envia o `RenderedPrompt` para um `IChatClient` fake, sem HTTP.
 
@@ -44,4 +44,4 @@ dotnet run --project samples/Consumer.ImageAnalysis
 ```
 
 O sample imprime a configuração efetiva, o prompt pinado, as mensagens, o
-SHA-256, os hints do renderer e a resposta determinística do client fake.
+SHA-256, as tools anexadas, os hints do renderer e a resposta determinística do client fake.

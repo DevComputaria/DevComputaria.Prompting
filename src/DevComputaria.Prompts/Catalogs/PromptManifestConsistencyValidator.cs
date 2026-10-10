@@ -34,6 +34,8 @@ public sealed class PromptManifestConsistencyValidator
         var expectedResources = expectedEntries
             .Select(x => x.ResourceName)
             .ToHashSet(StringComparer.Ordinal);
+        var expectedSkillEntries = manifest.ExpandSkillVersions().ToArray();
+        var expectedSkillResources = expectedSkillEntries.Select(x => x.ResourceName).ToHashSet(StringComparer.Ordinal);
         var publishedVersionsById = expectedEntries
             .GroupBy(x => x.Id, StringComparer.Ordinal)
             .ToDictionary(
@@ -70,6 +72,22 @@ public sealed class PromptManifestConsistencyValidator
             if (!expectedResources.Contains(resource))
             {
                 issues.Add($"Resource '{resource}' is embedded but not declared in the manifest.");
+            }
+        }
+
+        foreach (var entry in expectedSkillEntries.OrderBy(x => x.ResourceName, StringComparer.Ordinal))
+        {
+            if (!resources.Contains(entry.ResourceName))
+            {
+                issues.Add($"Skill manifest entry '{entry.Id}@{entry.Version}' points to missing resource '{entry.ResourceName}'.");
+            }
+        }
+
+        foreach (var resource in resources.Where(PromptResourceNames.IsSkillFile).OrderBy(x => x, StringComparer.Ordinal))
+        {
+            if (!expectedSkillResources.Contains(resource))
+            {
+                issues.Add($"Skill resource '{resource}' is embedded but not declared in the manifest.");
             }
         }
 

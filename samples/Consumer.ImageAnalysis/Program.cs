@@ -1,6 +1,7 @@
 using Consumer.ImageAnalysis;
 using DevComputaria.PromptKit.Abstractions;
 using DevComputaria.Prompts.Hosting;
+using DevComputaria.Prompts.Ids;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +28,7 @@ if (!environmentName.Equals("Development", StringComparison.OrdinalIgnoreCase) &
     throw new InvalidOperationException("Directory override must never be enabled outside Development.");
 }
 
-var promptId = new PromptId("image-analysis.analyze-document", "1.0.0");
+var promptId = PromptPins.ImageAnalysisAnalyzeDocument.V1_1_0;
 var promptArgs = new PromptArgs(new Dictionary<string, object?>
 {
     ["country"] = "BR",
@@ -50,6 +51,12 @@ foreach (var message in rendered.Messages)
 {
     Console.WriteLine($"[{message.Role}]");
     Console.WriteLine(message.Content);
+}
+
+Console.WriteLine("Tools:");
+foreach (var tool in rendered.Tools)
+{
+    Console.WriteLine($"- {tool.Name}: {tool.Description}");
 }
 
 Console.WriteLine($"Fake client: {completion.Provider}");

@@ -34,20 +34,22 @@ public sealed partial class HandlebarsPromptRenderer : IPromptRenderer
         var prompt = await _catalog.GetAsync(id, cancellationToken);
         var composed = await _composer.ComposeAsync(prompt, cancellationToken);
         var sanitized = await _sanitizer.SanitizeAsync(composed, args, cancellationToken);
+        var effectiveArgs = MergeInjectedArguments(sanitized, composed.InjectedArguments);
 
         var renderedMessages = composed.Parts
-            .Select(part => RenderPart(composed.Id, part, sanitized))
+            .Select(part => RenderPart(composed.Id, part, effectiveArgs))
             .ToArray();
 
         return new RenderedPrompt(
             composed.Id,
-            _hasher.ComputeHash(composed, sanitized, renderedMessages),
+            _hasher.ComputeHash(composed, effectiveArgs, renderedMessages),
             renderedMessages,
             packageVersion: _packageVersion,
             hints: new Dictionary<string, string?>
             {
                 ["renderer"] = "handlebars-sandbox"
-            });
+            },
+            tools: composed.Tools);
     }
 
     private RenderedMessage RenderPart(PromptId promptId, RenderedMessage part, PromptArgs args)
@@ -55,7 +57,28 @@ public sealed partial class HandlebarsPromptRenderer : IPromptRenderer
         _sandbox.Validate(promptId, part.Content);
 
         var rendered = RenderTemplate(part.Content, args);
-        return new RenderedMessage(part.Role, rendered);
+        return new RenderedMessage(part.Role, rendered, part.Source);
+    }
+
+    private static PromptArgs MergeInjectedArguments(PromptArgs args, IReadOnlyDictionary<string, string> injectedArguments)
+    {
+        if (injectedArguments.Count == 0)
+        {
+            return args;
+        }
+
+        var values = args.ToDictionary(x => x.Key, x => x.Value, StringComparer.Ordinal);
+        foreach (var (key, value) in injectedArguments)
+        {
+            if (values.ContainsKey(key))
+            {
+                throw new InvalidOperationException($"Argument '{key}' is managed by the prompt contract and cannot be supplied by the caller.");
+            }
+
+            values.Add(key, value);
+        }
+
+        return new PromptArgs(values);
     }
 
     private static string RenderTemplate(string template, PromptArgs args)

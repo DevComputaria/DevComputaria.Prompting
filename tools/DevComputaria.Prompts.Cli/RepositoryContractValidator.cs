@@ -75,7 +75,9 @@ internal sealed class RepositoryContractValidator
     {
         try
         {
-            var prompt = _promptLoader.Load(File.ReadAllText(path));
+            var prompt = _promptLoader.Load(
+                File.ReadAllText(path),
+                from => File.ReadAllText(ResolveSiblingMarkdown(path, from)));
             var relativeToPrompts = Path.GetRelativePath(Path.Combine(root, "prompts"), path)
                 .Replace(Path.DirectorySeparatorChar, '/');
 
@@ -115,11 +117,41 @@ internal sealed class RepositoryContractValidator
                     issues.Add($"{displayPath}: output schema '{prompt.OutputSchemaRef}' was not found.");
                 }
             }
+
+            foreach (var skill in prompt.Skills)
+            {
+                var skillPath = Path.Combine(
+                    root,
+                    "skills",
+                    skill.Id.Replace('.', Path.DirectorySeparatorChar),
+                    skill.Version + ".yaml");
+                if (!File.Exists(skillPath))
+                {
+                    issues.Add($"{displayPath}: pinned skill '{skill.Id}@{skill.Version}' was not found.");
+                }
+            }
         }
         catch (Exception exception)
         {
             issues.Add($"{displayPath}: cannot load prompt: {exception.Message}");
         }
+    }
+
+    private static string ResolveSiblingMarkdown(string promptPath, string from)
+    {
+        if (string.IsNullOrWhiteSpace(from) || !from.EndsWith(".md", StringComparison.OrdinalIgnoreCase) ||
+            Path.GetFileName(from) != from || from.Contains("..", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException($"Prompt part reference '{from}' must name a sibling Markdown file.");
+        }
+
+        var resolved = Path.Combine(Path.GetDirectoryName(promptPath)!, from);
+        if (!File.Exists(resolved))
+        {
+            throw new FileNotFoundException($"Prompt part '{from}' was not found.", resolved);
+        }
+
+        return resolved;
     }
 
     private static void ValidateManifest(
@@ -132,7 +164,11 @@ internal sealed class RepositoryContractValidator
         var resourceNames = promptFiles
             .Select(path => Path.GetRelativePath(promptsDirectory, path).Replace(Path.DirectorySeparatorChar, '/'))
             .Select(relative => "prompts." + relative)
-            .Append(PromptResourceNames.Catalog);
+            .Append(PromptResourceNames.Catalog)
+            .Concat(Directory.Exists(Path.Combine(root, "skills"))
+                ? Directory.EnumerateFiles(Path.Combine(root, "skills"), "*.yaml", SearchOption.AllDirectories)
+                    .Select(path => "skills." + Path.GetRelativePath(Path.Combine(root, "skills"), path).Replace(Path.DirectorySeparatorChar, '/'))
+                : Array.Empty<string>());
 
         try
         {

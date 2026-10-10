@@ -28,6 +28,21 @@
           }
         }
       }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "versions"],
+        "properties": {
+          "id": { "type": "string" },
+          "versions": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+            "minItems": 1
+          }
+        }
+      }
     }
   },
   "additionalProperties": true
