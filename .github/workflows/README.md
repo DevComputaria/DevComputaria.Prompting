@@ -10,7 +10,9 @@ sequence on every run:
 2. run the CLI `validate` command;
 3. test manifest and embedded-resource consistency;
 4. test schemas, published-artifact immutability, and render fixtures;
-5. test CLI exit codes and diagnostics.
+5. test CLI exit codes and diagnostics;
+6. run the end-to-end consumer sample in Production with directory override
+   suppression enabled.
 
 Any failed command stops the job and leaves the check unsuccessful. Configure
 the repository's `main` branch protection to require the
@@ -25,6 +27,7 @@ dotnet run --project tools/DevComputaria.Prompts.Cli --configuration Release --n
 dotnet test tests/DevComputaria.Prompts.Tests/DevComputaria.Prompts.Tests.csproj --configuration Release --no-build --no-restore
 dotnet test tests/DevComputaria.Prompts.Contract.Tests/DevComputaria.Prompts.Contract.Tests.csproj --configuration Release --no-build --no-restore
 dotnet test tests/DevComputaria.Prompts.Cli.Tests/DevComputaria.Prompts.Cli.Tests.csproj --configuration Release --no-build --no-restore
+DOTNET_ENVIRONMENT=Production PROMPTS_DIRECTORY_OVERRIDE=./prompts dotnet run --project samples/Consumer.ImageAnalysis --configuration Release --no-build
 ```
 
 ## Prompts package

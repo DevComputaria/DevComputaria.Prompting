@@ -1,6 +1,6 @@
 # GH-013 — Deliver end-to-end sample
 
-- **Status:** todo
+- **Status:** done
 - **PR bucket:** PR-2
 - **Phase:** F4
 - **Source:** PRD 10.13, ADR-003 section 9
@@ -26,6 +26,6 @@ Entregar sample que comprove integração ponta-a-ponta sem provider real.
 
 ## Acceptance criteria
 
-- [ ] Sample compila e executa.
-- [ ] Prompt versionado é renderizado corretamente.
-- [ ] Override local não afeta production.
+- [x] Sample compila e executa.
+- [x] Prompt versionado é renderizado corretamente.
+- [x] Override local não afeta production.
