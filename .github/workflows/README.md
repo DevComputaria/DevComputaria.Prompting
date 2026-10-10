@@ -2,9 +2,9 @@
 
 ## Prompt contract validation
 
-`validate-prompts.yml` runs for every pull request, on manual dispatch, and as a
-reusable workflow. Its `prompt-contract` job performs the same deterministic
-sequence on every run:
+`validate-prompts.yml` runs for every pull request, for every push to `main`, on
+manual dispatch, and as a reusable workflow. Its `prompt-contract` job performs
+the same deterministic sequence on every run:
 
 1. restore and build the solution in Release mode;
 2. run the CLI `validate` command;
@@ -46,10 +46,11 @@ transition that does not exactly match that declaration.
 
 ## Package artifacts
 
-`pack-prompts.yml` can only execute its `pack prompts` job after the reusable
-prompt contract gate succeeds. A successful run uploads the generated `.nupkg`
-as a workflow artifact tied to the commit SHA. A failed gate therefore produces
-no releasable package artifact.
+`pack-promptkit.yml` and `pack-prompts.yml` can only execute their packaging jobs
+after the reusable prompt contract gate succeeds, including all four test
+projects. A successful run uploads the generated `.nupkg` as a workflow artifact
+tied to the commit SHA. A failed test or contract check therefore produces no
+releasable package artifact.
 
 The workflows intentionally do not push directly to NuGet. Promotion uses the
 reviewed workflow artifact and a protected production environment as defined in
