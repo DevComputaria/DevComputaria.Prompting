@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: validate-prompts-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-validate-prompts-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
