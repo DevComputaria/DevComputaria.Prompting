@@ -10,8 +10,10 @@ public sealed class SchemaValidationTests
     public void PromptYaml_FromRepository_ShouldMatchPromptSchema()
     {
         var schema = File.ReadAllText(ContractTestPaths.ResolveFromRoot("schemas", "prompt.schema.json"));
-        var promptDirectory = ContractTestPaths.ResolveFromRoot("prompts", "image-analysis", "analyze-document");
-        foreach (var path in Directory.EnumerateFiles(promptDirectory, "*.yaml", SearchOption.TopDirectoryOnly))
+        var promptDirectory = ContractTestPaths.ResolveFromRoot("prompts");
+        foreach (var path in Directory.EnumerateFiles(promptDirectory, "*.yaml", SearchOption.AllDirectories)
+                     .Where(path => !Path.GetFileName(path).Equals("catalog.yaml", StringComparison.Ordinal)
+                                    && !path.Contains($"{Path.DirectorySeparatorChar}_shared{Path.DirectorySeparatorChar}", StringComparison.Ordinal)))
         {
             var errors = _validator.ValidateYaml(schema, File.ReadAllText(path));
             Assert.True(errors.Count == 0, $"{Path.GetFileName(path)}: {string.Join(Environment.NewLine, errors)}");

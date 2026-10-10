@@ -1,0 +1,24 @@
+{
+  "promptId": "promptologia.csharp-webapi-crud",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "products-explicit-service",
+      "category": "happy-path",
+      "args": { "entity_name": "Product", "service_name": "IProductRepository" },
+      "renderMustContain": ["Entidade: Product", "IProductRepository"],
+      "candidateOutput": "[ApiController]\n[Route(\"api/[controller]\")]\npublic sealed class ProductsController : ControllerBase\n{\n    public async Task<IActionResult> Get() => Ok();\n    public async Task<IActionResult> Get(int id) => NotFound();\n    public async Task<IActionResult> Post(Product value) => Created();\n    public async Task<IActionResult> Put(int id, Product value) => NoContent();\n    public async Task<IActionResult> Delete(int id) => NoContent();\n}",
+      "outputMustContain": ["[ApiController]", "[Route(", "Task<IActionResult>", "Get(", "Post(", "Put(", "Delete("],
+      "outputMustNotContain": ["class Product\n"]
+    },
+    {
+      "id": "default-service-name",
+      "category": "boundary",
+      "args": { "entity_name": "Order" },
+      "renderMustContain": ["Entidade: Order", "IOrderService"],
+      "candidateOutput": "[ApiController] public sealed class OrdersController : ControllerBase { private readonly IOrderService service; public OrdersController(IOrderService service) => this.service = service; }",
+      "outputMustContain": ["OrdersController", "IOrderService"],
+      "outputMustNotContain": ["I{{entity_name}}Service"]
+    }
+  ]
+}

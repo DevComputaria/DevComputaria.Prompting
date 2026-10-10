@@ -1,0 +1,47 @@
+The "Don't Blame Us If The AI Goes Rogue" License (DBUAITR License)
+(Inspirada na Licença MIT, mas com mais café e menos esperança)
+
+Copyright (c) 2024 Os Culpados da Comunidade DevComputaria
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software", ou "Essa Pilha de Prompts que Tentamos Fazer Funcionar"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions (e a um suprimento constante de cafeína):
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software (mesmo que você só copie aquela linha genial que fez a IA quase entender o que é um array).
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT (vulgo, "use por sua conta e risco, boa sorte, e que os deuses do deploy estejam com você").
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+OR OTHER DEALINGS IN THE SOFTWARE (sério, se isso aqui começar uma revolução das máquinas, invocar um Cthulhu digital ou simplesmente apagar seu banco de dados de produção na sexta às 18h... a gente avisou. Não nos processe. Oferecemos café e condolências, no máximo).
+
+Tradução livre e bem-humorada para PT-BR:
+
+A Licença "Não Nos Culpe Se a IA Ficar Maluca" (Licença NNCSIFM)
+(Inspirada na Licença MIT, porque copiar é mais fácil que criar do zero)
+
+Copyright (c) 2024 Os Culpados da Comunidade DevComputaria
+
+É concedida permissão, gratuitamente, a qualquer pessoa que obtenha uma cópia
+deste software e dos arquivos de documentação associados (o "Software", também conhecido como "Este Monte de Prompts Que Tentamos Fazer Ter Sentido"), para lidar
+com o Software sem restrições, incluindo, sem limitação, os direitos
+de usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e/ou vender
+cópias do Software, e permitir que as pessoas a quem o Software é
+fornecido o façam, sujeito às seguintes condições (e a um estoque infinito de café):
+
+O aviso de copyright acima e este aviso de permissão deverão ser incluídos em todas
+as cópias ou partes substanciais do Software (mesmo que você só dê CTRL+C CTRL+V naquela única linha que fez a IA quase entender o que é um loop `for`).
+
+O SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU
+IMPLÍCITA, INCLUINDO, MAS NÃO SE LIMITANDO ÀS GARANTIAS DE COMERCIALIZAÇÃO,
+ADEQUAÇÃO A UM PROPÓSITO ESPECÍFICO E NÃO INFRAÇÃO (em outras palavras: "use por sua conta e risco, se der ruim a culpa não é nossa, e que a sorte esteja sempre a seu favor... você vai precisar").
+EM NENHUM CASO OS AUTORES OU DETENTORES DOS DIREITOS AUTORAIS SERÃO RESPONSABILIZADOS POR QUALQUER RECLAMAÇÃO,
+DANOS OU OUTRA RESPONSABILIDADE, SEJA EM UMA AÇÃO DE CONTRATO, DELITO OU
+DE OUTRA FORMA, DECORRENTE DE, OU EM CONEXÃO COM O SOFTWARE OU O USO
+OU OUTRAS TRANSAÇÕES NO SOFTWARE (sério mesmo, se este troço invocar um demônio digital, fizer seu café esfriar instantaneamente ou simplesmente deletar todos os seus arquivos importantes na véspera daquela apresentação crucial... bem, azar o seu. A gente avisou. Não adianta processar. Oferecemos um ombro amigo e talvez uma xícara de café, se ainda tivermos).

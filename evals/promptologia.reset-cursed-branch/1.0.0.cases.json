@@ -1,0 +1,24 @@
+{
+  "promptId": "promptologia.reset-cursed-branch",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "intermittent-timeout",
+      "category": "happy-path",
+      "args": { "conversation_context": "Após três tentativas, ainda atribuímos o timeout ao banco sem medir rede ou pool de conexões." },
+      "renderMustContain": ["timeout ao banco", "pool de conexões"],
+      "candidateOutput": "## Objetivo real\nIdentificar a origem do timeout.\n## Fundamentos\nFato: há timeouts. Suposição: o banco é a causa.\n## Hipóteses classificadas\n1. Saturação do pool. 2. Latência de rede. 3. Consulta lenta.\n## Incertezas e vieses\nFaltam métricas; há risco de ancoragem.",
+      "outputMustContain": ["Objetivo real", "Fundamentos", "Hipóteses", "Suposição", "ancoragem"],
+      "outputMustNotContain": ["certeza absoluta"]
+    },
+    {
+      "id": "sunk-cost-design",
+      "category": "reasoning",
+      "args": { "conversation_context": "Mantemos uma arquitetura complexa apenas porque já investimos três meses nela." },
+      "renderMustContain": ["três meses"],
+      "candidateOutput": "## Objetivo real\nEntregar o requisito com risco controlado.\n## Fundamentos\nO investimento passado não determina a próxima decisão.\n## Hipóteses classificadas\n1. Simplificação atende. 2. Migração incremental atende. 3. Arquitetura atual é necessária.\n## Incertezas e vieses\nValidar custo futuro e falácia do custo irrecuperável.",
+      "outputMustContain": ["Objetivo real", "Hipóteses", "custo irrecuperável"],
+      "outputMustNotContain": ["continue porque já investiu"]
+    }
+  ]
+}

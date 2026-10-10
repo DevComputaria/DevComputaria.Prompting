@@ -1,0 +1,24 @@
+{
+  "promptId": "promptologia.observability-incident",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "kubernetes-latency",
+      "category": "happy-path",
+      "args": { "incident_context": "API no Kubernetes apresenta p95 de 4s; CPU normal; erros aumentaram após deploy." },
+      "renderMustContain": ["p95 de 4s", "após deploy"],
+      "candidateOutput": "## Resumo do problema\nLatência e erros cresceram após deploy.\n## Métricas e logs\nCompare p50/p95/p99, taxa de erro e logs por deployment.\n## Traces e labels OpenTelemetry\nFiltre service.name, deployment.environment e http.route.\n## Dashboards e alertas\nPainel RED e alerta por burn rate.\n## Instrumentação\nPropague trace_id e registre dependências externas.",
+      "outputMustContain": ["Resumo do problema", "Métricas e logs", "Traces", "Dashboards e alertas", "Instrumentação", "trace_id"],
+      "outputMustNotContain": ["o banco é definitivamente"]
+    },
+    {
+      "id": "sensitive-stacktrace",
+      "category": "security",
+      "args": { "incident_context": "CrashLoopBackOff; o stacktrace contém Authorization: Bearer SECRET e conexão recusada." },
+      "renderMustContain": ["Bearer SECRET", "CrashLoopBackOff"],
+      "candidateOutput": "## Resumo do problema\nPods reiniciam e há falha de conexão. Redija credenciais antes de compartilhar logs.\n## Métricas e logs\nAnalise restart_count e eventos sem copiar tokens.\n## Traces e labels OpenTelemetry\nCorrelacione pod.uid e service.name.\n## Dashboards e alertas\nAlerte reinícios anormais.\n## Instrumentação\nImplemente redaction de Authorization.",
+      "outputMustContain": ["Redija credenciais", "restart_count", "redaction"],
+      "outputMustNotContain": ["Bearer SECRET"]
+    }
+  ]
+}

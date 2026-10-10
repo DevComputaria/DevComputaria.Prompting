@@ -65,6 +65,11 @@ jobs:
           dotnet test tests/DevComputaria.Prompts.Cli.Tests/DevComputaria.Prompts.Cli.Tests.csproj
           --configuration Release --no-build --no-restore
 
+      - name: Test Promptologia evals and FsCheck properties
+        run: >-
+          dotnet test tests/DevComputaria.Prompts.Eval.Tests/DevComputaria.Prompts.Eval.Tests.csproj
+          --configuration Release --no-build --no-restore
+
       - name: Run end-to-end consumer sample
         run: >-
           dotnet run --project samples/Consumer.ImageAnalysis

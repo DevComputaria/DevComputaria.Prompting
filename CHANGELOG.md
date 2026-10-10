@@ -8,6 +8,10 @@ The format is inspired by Keep a Changelog and adapted to the execution model of
 
 ### Added
 
+- Ten adapted and versioned Promptologia prompts with pinned upstream provenance and license notice.
+- Twenty deterministic local eval cases covering happy paths and boundary/security behavior for every imported prompt.
+- FsCheck property suite for argument ordering, sandbox non-re-evaluation, required variables, stable hashes, and sensitive-value redaction.
+- Mandatory Promptologia eval/property test execution in the pull-request and `main` validation workflow.
 - Functional `DevComputaria.Prompts.Cli` project with `validate` and `render` contract commands.
 - Repository validation for prompt/catalog schemas, manifest resources, aliases, path identities, includes, and output schema references.
 - JSON render output with pinned prompt identity, rendered messages, content hash, package metadata, and renderer hints.
